@@ -67,7 +67,8 @@
   "AbilityTextureName": {
     "type": "select",
     "label": "Texture Name",
-    "source": "ability_textures.json"
+    "source": "ability_textures.json",
+    "previewUrl": "https://cdn.steamstatic.com/apps/dota2/images/dota_react/abilities/{{value}}.png"
   },
   "MaxLevel": {
     "type": "number",

@@ -4,28 +4,42 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dota 2 Ability Builder</title>
+  <script>
+    const t = localStorage.getItem("theme") ?? (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+    document.documentElement.setAttribute("data-theme", t);
+  </script>
   <link rel="stylesheet" href="styles/styles.css">
 </head>
 <body>
 
-<div class="tabs">
-  <button class="tab active" data-tab="ability">Ability</button>
+<div class="topbar">
+  <div class="tabs">
+    <button class="tab active" data-tab="ability">Ability</button>
+  </div>
+  <button id="themeToggle" class="theme-toggle"></button>
 </div>
 
 <div id="ability" class="tab-content active">
-  <h2>Ability Builder</h2>
-  <div id="form"></div>
-
-  <h3>Lua Snippets</h3>
-  <div id="snippets"></div>
-
-  <h3>Preview</h3>
-  <pre id="luaPreview"></pre>
-  <pre id="kvPreview"></pre>
-
-  <div class="download-buttons">
-    <button id="downloadLua">⬇ Download Lua</button>
-    <button id="downloadKV">⬇ Download KV</button>
+  <div class="layout">
+    <div class="layout-left">
+      <h2>Ability Builder</h2>
+      <div id="form"></div>
+      <h3>Lua Snippets</h3>
+      <div id="snippets"></div>
+    </div>
+    <div class="layout-right">
+      <div class="preview-panel">
+        <h3>Preview</h3>
+        <h4 class="preview-label">Lua</h4>
+        <pre id="luaPreview"></pre>
+        <h4 class="preview-label">KeyValues</h4>
+        <pre id="kvPreview"></pre>
+        <div class="download-buttons">
+          <button id="downloadLua">⬇ Download Lua</button>
+          <button id="downloadKV">⬇ Download KV</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
