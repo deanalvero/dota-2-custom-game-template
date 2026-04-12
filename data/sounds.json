@@ -1,0 +1,9 @@
+[
+  {
+    "soundfile": "soundevents/game_sounds_heroes/game_sounds_vengefulspirit.vsndevts",
+    "sounds": [
+      "Hero_VengefulSpirit.MagicMissile",
+      "Hero_VengefulSpirit.NetherSwap"
+    ]
+  }
+]

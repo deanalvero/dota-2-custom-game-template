@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Dota Ability Builder</title>
+  <link rel="stylesheet" href="styles/styles.css">
+</head>
+<body>
+
+<div class="tabs">
+  <button class="tab active" data-tab="ability">Ability</button>
+</div>
+
+<div id="ability" class="tab-content active">
+  <h2>Ability Builder</h2>
+  <div id="form"></div>
+
+  <h3>Lua Snippets (OnSpellStart)</h3>
+  <div id="snippets"></div>
+
+  <button id="addSound">+ Add Play Sound</button>
+
+  <h3>Preview</h3>
+  <pre id="luaPreview"></pre>
+  <pre id="kvPreview"></pre>
+
+  <button id="downloadLua">Download Lua</button>
+  <button id="downloadKV">Download KV</button>
+</div>
+
+<script type="module" src="src/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+body { font-family: Arial; padding: 20px; }
+.tabs { margin-bottom: 10px; }
+.tab { padding: 10px; cursor: pointer; }
+.tab.active { background: #333; color: white; }
+
+pre {
+  background: #111;
+  color: #0f0;
+  padding: 10px;
+  overflow-x: auto;
+}
+
+.dropdown {
+  border: 1px solid #ccc;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.dropdown div {
+  padding: 5px;
+  cursor: pointer;
+}
+
+.dropdown div:hover {
+  background: #eee;
+}

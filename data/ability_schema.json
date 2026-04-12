@@ -1,0 +1,15 @@
+{
+  "AbilityName": { "type": "text", "default": "my_ability_lua" },
+  "ScriptFile": { "type": "text", "default": "my_ability_lua.lua" },
+  "AbilityBehavior": {
+    "type": "multiselect",
+    "options": [
+      "DOTA_ABILITY_BEHAVIOR_UNIT_TARGET",
+      "DOTA_ABILITY_BEHAVIOR_POINT"
+    ]
+  },
+  "AbilityTextureName": {
+    "type": "select",
+    "source": "ability_textures.json"
+  }
+}

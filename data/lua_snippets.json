@@ -1,0 +1,13 @@
+{
+  "OnSpellStart": [
+    {
+      "id": "play_sound_on_caster",
+      "label": "Play Sound on Caster",
+      "requires": ["caster"],
+      "params": {
+        "sound": { "type": "search_select", "source": "sounds.json" }
+      },
+      "template": "EmitSoundOn(\"{{sound}}\", caster)"
+    }
+  ]
+}
