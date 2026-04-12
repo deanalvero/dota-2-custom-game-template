@@ -1,27 +1,20 @@
 import { resolveSnippet, collectVarDecls, buildDefsById } from './snippetEngine.js';
 
 export function generateLua(state, snippetsJson) {
-  const name    = state.AbilityName || "my_ability_lua";
-  const actions = state.Lua?.OnSpellStart?.actions ?? [];
+  const name     = state.AbilityName || "my_ability_lua";
+  const actions  = state.Lua?.OnSpellStart?.actions ?? [];
   const defsById = buildDefsById(snippetsJson);
 
-  const precache = new Set();
+  const precache  = new Set();
   const codeLines = [];
   const varDecls  = collectVarDecls(actions, defsById);
 
   for (const action of actions) {
     const def = defsById[action.type];
-    if (!def) {
-      console.warn(`generateLua: no snippet definition found for type "${action.type}"`);
-      continue;
-    }
-
+    if (!def) { console.warn(`generateLua: unknown snippet type "${action.type}"`); continue; }
     const { codeLine } = resolveSnippet(def, action.params);
     codeLines.push(codeLine);
-
-    if (action.params.soundfile) {
-      precache.add(action.params.soundfile);
-    }
+    if (action.params.soundfile) precache.add(action.params.soundfile);
   }
 
   const ind = str => `    ${str}`;
@@ -51,7 +44,8 @@ export function generateLua(state, snippetsJson) {
 }
 
 export function generateKV(state) {
-  const name = state.AbilityName || "my_ability_lua";
+  const name     = state.AbilityName || "my_ability_lua";
+  const disabled = state._kvDisabled ?? new Set();
 
   const behavior = state.AbilityBehavior?.length
     ? state.AbilityBehavior.join(" | ")
@@ -64,29 +58,38 @@ export function generateKV(state) {
   const lines = [
     `"${name}"`,
     "{",
-    kv("BaseClass",         "ability_lua"),
-    kv("ScriptFile",        state.ScriptFile   || ""),
-    kv("AbilityType",       state.AbilityType  || "DOTA_ABILITY_TYPE_BASIC"),
-    kv("AbilityBehavior",   behavior),
+    kv("BaseClass",       "ability_lua"),
+    kv("ScriptFile",      state.ScriptFile  || ""),
+    kv("AbilityType",     state.AbilityType || "DOTA_ABILITY_TYPE_BASIC"),
+    kv("AbilityBehavior", behavior),
   ];
 
-  if (targetType) {
-    lines.push(
-      kv("AbilityUnitTargetTeam", state.AbilityUnitTargetTeam || "DOTA_UNIT_TARGET_TEAM_ENEMY"),
-      kv("AbilityUnitTargetType", targetType),
-    );
+  if (targetType && !disabled.has("AbilityUnitTargetType")) {
+    if (!disabled.has("AbilityUnitTargetTeam")) {
+      lines.push(kv("AbilityUnitTargetTeam", state.AbilityUnitTargetTeam || "DOTA_UNIT_TARGET_TEAM_ENEMY"));
+    }
+    lines.push(kv("AbilityUnitTargetType", targetType));
   }
 
-  lines.push(
-    kv("AbilityTextureName",  state.AbilityTextureName  || ""),
-    kv("MaxLevel",            String(state.MaxLevel      ?? 4)),
-    kv("AbilityCastRange",    state.AbilityCastRange     || "0"),
-    kv("AbilityCastPoint",    state.AbilityCastPoint     || "0.3"),
-    kv("AbilityCooldown",     state.AbilityCooldown      || "0"),
-    kv("AbilityManaCost",     state.AbilityManaCost      || "0"),
-  );
-
-  if (state.AbilityDamage && state.AbilityDamage !== "0") {
+  if (!disabled.has("AbilityTextureName")) {
+    lines.push(kv("AbilityTextureName", state.AbilityTextureName || ""));
+  }
+  if (!disabled.has("MaxLevel")) {
+    lines.push(kv("MaxLevel", String(state.MaxLevel ?? 4)));
+  }
+  if (!disabled.has("AbilityCastRange")) {
+    lines.push(kv("AbilityCastRange", state.AbilityCastRange || "0"));
+  }
+  if (!disabled.has("AbilityCastPoint")) {
+    lines.push(kv("AbilityCastPoint", state.AbilityCastPoint || "0.3"));
+  }
+  if (!disabled.has("AbilityCooldown")) {
+    lines.push(kv("AbilityCooldown", state.AbilityCooldown || "0"));
+  }
+  if (!disabled.has("AbilityManaCost")) {
+    lines.push(kv("AbilityManaCost", state.AbilityManaCost || "0"));
+  }
+  if (!disabled.has("AbilityDamage") && state.AbilityDamage && state.AbilityDamage !== "0") {
     lines.push(kv("AbilityDamage", state.AbilityDamage));
   }
 

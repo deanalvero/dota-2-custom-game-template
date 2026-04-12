@@ -44,6 +44,7 @@
   "AbilityUnitTargetTeam": {
     "type": "select",
     "label": "Target Team",
+    "optional": true,
     "options": [
       "DOTA_UNIT_TARGET_TEAM_ENEMY",
       "DOTA_UNIT_TARGET_TEAM_FRIENDLY",
@@ -55,6 +56,7 @@
   "AbilityUnitTargetType": {
     "type": "multiselect",
     "label": "Target Type",
+    "optional": true,
     "options": [
       "DOTA_UNIT_TARGET_HERO",
       "DOTA_UNIT_TARGET_BASIC",
@@ -67,12 +69,14 @@
   "AbilityTextureName": {
     "type": "select",
     "label": "Texture Name",
+    "optional": true,
     "source": "ability_textures.json",
     "previewUrl": "https://cdn.steamstatic.com/apps/dota2/images/dota_react/abilities/{{value}}.png"
   },
   "MaxLevel": {
     "type": "number",
     "label": "Max Level",
+    "optional": true,
     "default": 4,
     "min": 1,
     "max": 7
@@ -80,26 +84,31 @@
   "AbilityCastRange": {
     "type": "perlevel",
     "label": "Cast Range",
+    "optional": true,
     "default": "600"
   },
   "AbilityCastPoint": {
     "type": "perlevel",
     "label": "Cast Point",
+    "optional": true,
     "default": "0.3"
   },
   "AbilityCooldown": {
     "type": "perlevel",
     "label": "Cooldown",
+    "optional": true,
     "default": "16 14 12 10"
   },
   "AbilityManaCost": {
     "type": "perlevel",
     "label": "Mana Cost",
+    "optional": true,
     "default": "80 100 120 140"
   },
   "AbilityDamage": {
     "type": "perlevel",
     "label": "Ability Damage",
+    "optional": true,
     "default": "0"
   },
   "AbilityValues": {

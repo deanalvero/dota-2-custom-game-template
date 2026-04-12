@@ -43,6 +43,28 @@
   </div>
 </div>
 
+<dialog id="snippetDialog">
+  <div class="dialog-inner">
+    <div class="dialog-header">
+      <span class="dialog-title">Add Snippet — <span id="dialogEventLabel"></span></span>
+      <button class="dialog-close" id="dialogClose" type="button">✕</button>
+    </div>
+    <div class="dialog-body">
+      <div class="dialog-left">
+        <input type="search" class="snippet-search field-input" id="snippetSearch" placeholder="Search snippets…">
+        <div class="snippet-list" id="snippetList"></div>
+      </div>
+      <div class="dialog-right" id="snippetDetail">
+        <div class="dialog-placeholder">← Select a snippet</div>
+      </div>
+    </div>
+    <div class="dialog-footer">
+      <button class="btn-confirm" id="dialogAdd" type="button" disabled>Add</button>
+      <button class="btn-cancel" id="dialogCancel" type="button">Cancel</button>
+    </div>
+  </div>
+</dialog>
+
 <script type="module" src="src/app.js"></script>
 </body>
 </html>
