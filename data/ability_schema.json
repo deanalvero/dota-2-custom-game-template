@@ -1,15 +1,108 @@
 {
-  "AbilityName": { "type": "text", "default": "my_ability_lua" },
-  "ScriptFile": { "type": "text", "default": "my_ability_lua.lua" },
+  "AbilityName": {
+    "type": "text",
+    "label": "Ability Name",
+    "default": "my_ability_lua"
+  },
+  "ScriptFile": {
+    "type": "text",
+    "label": "Script File",
+    "default": "abilities/my_ability_lua.lua"
+  },
+  "AbilityType": {
+    "type": "select",
+    "label": "Ability Type",
+    "options": [
+      "DOTA_ABILITY_TYPE_BASIC",
+      "DOTA_ABILITY_TYPE_ULTIMATE",
+      "DOTA_ABILITY_TYPE_ATTRIBUTES",
+      "DOTA_ABILITY_TYPE_HIDDEN"
+    ],
+    "default": "DOTA_ABILITY_TYPE_BASIC"
+  },
   "AbilityBehavior": {
     "type": "multiselect",
+    "label": "Ability Behavior",
     "options": [
+      "DOTA_ABILITY_BEHAVIOR_NO_TARGET",
       "DOTA_ABILITY_BEHAVIOR_UNIT_TARGET",
-      "DOTA_ABILITY_BEHAVIOR_POINT"
+      "DOTA_ABILITY_BEHAVIOR_POINT",
+      "DOTA_ABILITY_BEHAVIOR_PASSIVE",
+      "DOTA_ABILITY_BEHAVIOR_TOGGLE",
+      "DOTA_ABILITY_BEHAVIOR_AOE",
+      "DOTA_ABILITY_BEHAVIOR_CHANNELLED",
+      "DOTA_ABILITY_BEHAVIOR_AUTOCAST",
+      "DOTA_ABILITY_BEHAVIOR_DIRECTIONAL",
+      "DOTA_ABILITY_BEHAVIOR_IMMEDIATE",
+      "DOTA_ABILITY_BEHAVIOR_HIDDEN",
+      "DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE",
+      "DOTA_ABILITY_BEHAVIOR_DONT_RESUME_MOVEMENT",
+      "DOTA_ABILITY_BEHAVIOR_IGNORE_BACKSWING",
+      "DOTA_ABILITY_BEHAVIOR_ITEM"
+    ]
+  },
+  "AbilityUnitTargetTeam": {
+    "type": "select",
+    "label": "Target Team",
+    "options": [
+      "DOTA_UNIT_TARGET_TEAM_ENEMY",
+      "DOTA_UNIT_TARGET_TEAM_FRIENDLY",
+      "DOTA_UNIT_TARGET_TEAM_BOTH",
+      "DOTA_UNIT_TARGET_TEAM_CUSTOM"
+    ],
+    "default": "DOTA_UNIT_TARGET_TEAM_ENEMY"
+  },
+  "AbilityUnitTargetType": {
+    "type": "multiselect",
+    "label": "Target Type",
+    "options": [
+      "DOTA_UNIT_TARGET_HERO",
+      "DOTA_UNIT_TARGET_BASIC",
+      "DOTA_UNIT_TARGET_CREEP",
+      "DOTA_UNIT_TARGET_BUILDING",
+      "DOTA_UNIT_TARGET_COURIER",
+      "DOTA_UNIT_TARGET_ALL"
     ]
   },
   "AbilityTextureName": {
     "type": "select",
+    "label": "Texture Name",
     "source": "ability_textures.json"
+  },
+  "MaxLevel": {
+    "type": "number",
+    "label": "Max Level",
+    "default": 4,
+    "min": 1,
+    "max": 7
+  },
+  "AbilityCastRange": {
+    "type": "perlevel",
+    "label": "Cast Range",
+    "default": "600"
+  },
+  "AbilityCastPoint": {
+    "type": "perlevel",
+    "label": "Cast Point",
+    "default": "0.3"
+  },
+  "AbilityCooldown": {
+    "type": "perlevel",
+    "label": "Cooldown",
+    "default": "16 14 12 10"
+  },
+  "AbilityManaCost": {
+    "type": "perlevel",
+    "label": "Mana Cost",
+    "default": "80 100 120 140"
+  },
+  "AbilityDamage": {
+    "type": "perlevel",
+    "label": "Ability Damage",
+    "default": "0"
+  },
+  "AbilitySpecial": {
+    "type": "special",
+    "label": "AbilitySpecial"
   }
 }

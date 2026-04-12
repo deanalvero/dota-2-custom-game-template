@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Dota Ability Builder</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dota 2 Ability Builder</title>
   <link rel="stylesheet" href="styles/styles.css">
 </head>
 <body>
@@ -15,17 +16,17 @@
   <h2>Ability Builder</h2>
   <div id="form"></div>
 
-  <h3>Lua Snippets (OnSpellStart)</h3>
+  <h3>Lua Snippets</h3>
   <div id="snippets"></div>
-
-  <button id="addSound">+ Add Play Sound</button>
 
   <h3>Preview</h3>
   <pre id="luaPreview"></pre>
   <pre id="kvPreview"></pre>
 
-  <button id="downloadLua">Download Lua</button>
-  <button id="downloadKV">Download KV</button>
+  <div class="download-buttons">
+    <button id="downloadLua">⬇ Download Lua</button>
+    <button id="downloadKV">⬇ Download KV</button>
+  </div>
 </div>
 
 <script type="module" src="src/app.js"></script>

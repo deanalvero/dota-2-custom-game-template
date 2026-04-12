@@ -8,6 +8,31 @@
         "sound": { "type": "search_select", "source": "sounds.json" }
       },
       "template": "EmitSoundOn(\"{{sound}}\", caster)"
+    },
+    {
+      "id": "play_sound_on_target",
+      "label": "Play Sound on Target",
+      "requires": ["target"],
+      "params": {
+        "sound": { "type": "search_select", "source": "sounds.json" }
+      },
+      "template": "EmitSoundOn(\"{{sound}}\", target)"
+    },
+    {
+      "id": "deal_damage_to_target",
+      "label": "Deal Damage to Target",
+      "requires": ["caster", "target", "ability"],
+      "params": {
+        "damage_type": {
+          "type": "select",
+          "options": [
+            "DAMAGE_TYPE_MAGICAL",
+            "DAMAGE_TYPE_PHYSICAL",
+            "DAMAGE_TYPE_PURE"
+          ]
+        }
+      },
+      "template": "ApplyDamage({ victim = target, attacker = caster, damage = ability:GetSpecialValueFor(\"damage\"), damage_type = {{damage_type}} })"
     }
   ]
 }

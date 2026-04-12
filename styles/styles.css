@@ -1,26 +1,171 @@
-body { font-family: Arial; padding: 20px; }
-.tabs { margin-bottom: 10px; }
-.tab { padding: 10px; cursor: pointer; }
-.tab.active { background: #333; color: white; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  background: #1a1a1a;
+  color: #ddd;
+  padding: 24px;
+  max-width: 900px;
+}
+
+h2 { color: #fff; margin: 0 0 16px; }
+h3 { color: #ccc; margin: 24px 0 10px; border-bottom: 1px solid #333; padding-bottom: 4px; }
+h4 { color: #aaa; margin: 12px 0 6px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+.tabs { margin-bottom: 20px; border-bottom: 2px solid #333; }
+.tab  { padding: 10px 20px; background: none; border: none; color: #888; font-size: 14px; cursor: pointer; }
+.tab.active { background: #333; color: #fff; border-radius: 4px 4px 0 0; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+.field       { margin-bottom: 14px; }
+.field-label { display: block; font-size: 12px; color: #888; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.04em; }
+.field-hint  { display: block; font-size: 11px; color: #555; margin-top: 3px; }
+
+.field-input {
+  width: 100%;
+  max-width: 480px;
+  padding: 6px 10px;
+  background: #252525;
+  border: 1px solid #3a3a3a;
+  border-radius: 4px;
+  color: #ddd;
+  font-size: 13px;
+}
+.field-input:focus { outline: none; border-color: #5a9a5a; }
+
+.checkbox-group { display: flex; flex-wrap: wrap; gap: 8px; }
+.checkbox-label {
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  padding: 3px 8px;
+  background: #252525;
+  border: 1px solid #3a3a3a;
+  border-radius: 3px;
+}
+.checkbox-label:hover { border-color: #5a5a5a; }
+.checkbox-label input { accent-color: #5a9a5a; }
+
+.special-list  { display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; }
+.special-row   { display: flex; gap: 8px; align-items: center; }
+.special-type  { max-width: 160px; }
+.special-key   { max-width: 160px; }
+.special-value { max-width: 220px; }
+
+.btn-add-snippet {
+  padding: 5px 12px;
+  background: #1e3a1e;
+  border: 1px solid #3a6a3a;
+  border-radius: 4px;
+  color: #7acc7a;
+  cursor: pointer;
+  font-size: 13px;
+  margin-right: 6px;
+  margin-bottom: 4px;
+}
+.btn-add-snippet:hover { background: #264d26; }
+
+.snippet-form {
+  margin: 10px 0 10px 0;
+  padding: 14px;
+  background: #202020;
+  border: 1px solid #3a3a3a;
+  border-radius: 6px;
+  max-width: 500px;
+}
+.snippet-param         { margin-bottom: 10px; }
+.snippet-param label   { display: block; font-size: 12px; color: #888; margin-bottom: 4px; }
+
+.action-list    { list-style: none; margin: 8px 0; }
+.action-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 10px;
+  background: #202020;
+  border: 1px solid #333;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 12px;
+  margin-bottom: 4px;
+  color: #7acc7a;
+}
+
+.btn-add {
+  padding: 5px 12px;
+  background: #1e3a1e;
+  border: 1px solid #3a6a3a;
+  border-radius: 4px;
+  color: #7acc7a;
+  font-size: 13px;
+  cursor: pointer;
+}
+.btn-confirm {
+  padding: 5px 12px;
+  background: #1e3a1e;
+  border: 1px solid #3a6a3a;
+  border-radius: 4px;
+  color: #7acc7a;
+  font-size: 13px;
+  cursor: pointer;
+}
+.btn-cancel {
+  padding: 5px 12px;
+  background: #3a1e1e;
+  border: 1px solid #6a3a3a;
+  border-radius: 4px;
+  color: #cc7a7a;
+  font-size: 13px;
+  cursor: pointer;
+  margin-left: 6px;
+}
+.btn-remove {
+  padding: 2px 7px;
+  background: #3a1e1e;
+  border: 1px solid #6a3a3a;
+  border-radius: 3px;
+  color: #cc7a7a;
+  font-size: 11px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.download-buttons         { display: flex; gap: 10px; margin-top: 8px; }
+.download-buttons button  {
+  padding: 8px 18px;
+  background: #1a2e4a;
+  border: 1px solid #2a5080;
+  border-radius: 4px;
+  color: #7ab4f5;
+  font-size: 14px;
+  cursor: pointer;
+}
+.download-buttons button:hover { background: #1e3a60; }
 
 pre {
-  background: #111;
-  color: #0f0;
-  padding: 10px;
+  background: #0d0d0d;
+  color: #4fc04f;
+  padding: 14px;
+  border-radius: 6px;
   overflow-x: auto;
+  font-size: 12px;
+  line-height: 1.6;
+  white-space: pre;
+  margin-bottom: 14px;
+  border: 1px solid #222;
 }
 
 .dropdown {
-  border: 1px solid #ccc;
-  max-height: 150px;
+  max-width: 480px;
+  border: 1px solid #3a3a3a;
+  border-radius: 0 0 4px 4px;
+  max-height: 160px;
   overflow-y: auto;
+  background: #1e1e1e;
 }
-
-.dropdown div {
-  padding: 5px;
-  cursor: pointer;
-}
-
-.dropdown div:hover {
-  background: #eee;
-}
+.dropdown div { padding: 6px 10px; cursor: pointer; font-size: 13px; }
+.dropdown div:hover { background: #1e3a1e; color: #7acc7a; }
