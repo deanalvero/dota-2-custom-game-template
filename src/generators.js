@@ -90,19 +90,13 @@ export function generateKV(state) {
     lines.push(kv("AbilityDamage", state.AbilityDamage));
   }
 
-  const specials = state.AbilitySpecial ?? [];
-  if (specials.length) {
+  const values = state.AbilityValues ?? [];
+  if (values.length) {
     lines.push(
-      '    "AbilitySpecial"',
+      '    "AbilityValues"',
       "    {",
-      ...specials.flatMap((s, i) => [
-        `        "${String(i + 1).padStart(2, "0")}"`,
-        "        {",
-        `            "var_type"    "${s.varType || "FIELD_FLOAT"}"`,
-        `            "${s.key}"${kvPad(s.key, 12)}"${s.value}"`,
-        "        }",
-      ]),
-      "    }",
+      ...values.map(s => `        "${s.key}"${kvPad(s.key, 24)}"${s.value}"`),
+      "    }"
     );
   }
 

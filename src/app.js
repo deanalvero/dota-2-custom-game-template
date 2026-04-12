@@ -4,7 +4,7 @@ import { generateLua, generateKV } from './generators.js';
 const state = {
   AbilityBehavior:       [],
   AbilityUnitTargetType: [],
-  AbilitySpecial:        [],
+  AbilityValues:         [],
   Lua: { OnSpellStart: { actions: [] } },
 };
 

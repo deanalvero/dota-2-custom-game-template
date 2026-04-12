@@ -14,7 +14,7 @@ export async function renderForm(schema, container, state, onChange, labels = {}
       case "perlevel":  renderPerLevel(wrapper, key, config, state, onChange);               break;
       case "multiselect": renderMultiselect(wrapper, key, config, state, onChange, labels);  break;
       case "select":    await renderSelect(wrapper, key, config, state, onChange, labels);   break;
-      case "special":   renderSpecial(wrapper, key, state, onChange, labels);                break;
+      case "values":    renderValues(wrapper, key, state, onChange, labels);                 break;
       default: console.warn(`formRenderer: unknown field type "${config.type}" for "${key}"`);
     }
 
@@ -136,9 +136,8 @@ async function renderSelect(wrapper, key, config, state, onChange, labels) {
   }
 }
 
-function renderSpecial(wrapper, key, state, onChange, labels) {
+function renderValues(wrapper, key, state, onChange, labels) {
   state[key] = state[key] ?? [];
-  const VAR_TYPES = ["FIELD_FLOAT", "FIELD_INTEGER"];
   const list = document.createElement("div");
   list.className = "special-list";
 
@@ -148,28 +147,17 @@ function renderSpecial(wrapper, key, state, onChange, labels) {
       const row = document.createElement("div");
       row.className = "special-row";
 
-      const typeSelect = document.createElement("select");
-      typeSelect.className = "field-input special-type";
-      VAR_TYPES.forEach(t => {
-        const o = document.createElement("option");
-        o.value = t;
-        o.textContent = labels[t] ?? t;
-        typeSelect.appendChild(o);
-      });
-      typeSelect.value = entry.varType ?? "FIELD_FLOAT";
-      typeSelect.addEventListener("change", () => { state[key][i].varType = typeSelect.value; onChange(); });
-
       const keyInput = document.createElement("input");
       keyInput.type = "text";
       keyInput.className = "field-input special-key";
-      keyInput.placeholder = "var name  e.g. damage";
+      keyInput.placeholder = "var name  e.g. regrow_radius";
       keyInput.value = entry.key ?? "";
       keyInput.addEventListener("input", () => { state[key][i].key = keyInput.value; onChange(); });
 
       const valInput = document.createElement("input");
       valInput.type = "text";
       valInput.className = "field-input special-value";
-      valInput.placeholder = "values  e.g. 100 200 300 400";
+      valInput.placeholder = "values  e.g. 250 350";
       valInput.value = entry.value ?? "";
       valInput.addEventListener("input", () => { state[key][i].value = valInput.value; onChange(); });
 
@@ -179,7 +167,8 @@ function renderSpecial(wrapper, key, state, onChange, labels) {
       removeBtn.type = "button";
       removeBtn.addEventListener("click", () => { state[key].splice(i, 1); renderEntries(); onChange(); });
 
-      row.append(typeSelect, keyInput, valInput, removeBtn);
+      // Append only key, value, and remove button (dropped typeSelect)
+      row.append(keyInput, valInput, removeBtn);
       list.appendChild(row);
     });
   }
@@ -187,10 +176,10 @@ function renderSpecial(wrapper, key, state, onChange, labels) {
   renderEntries();
 
   const addBtn = document.createElement("button");
-  addBtn.textContent = "+ Add Special Value";
+  addBtn.textContent = "+ Add Ability Value";
   addBtn.className = "btn-add";
   addBtn.type = "button";
-  addBtn.addEventListener("click", () => { state[key].push({ varType: "FIELD_FLOAT", key: "", value: "" }); renderEntries(); onChange(); });
+  addBtn.addEventListener("click", () => { state[key].push({ key: "", value: "" }); renderEntries(); onChange(); });
 
   wrapper.append(list, addBtn);
 }

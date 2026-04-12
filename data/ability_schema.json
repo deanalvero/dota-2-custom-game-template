@@ -102,8 +102,8 @@
     "label": "Ability Damage",
     "default": "0"
   },
-  "AbilitySpecial": {
-    "type": "special",
-    "label": "AbilitySpecial"
+  "AbilityValues": {
+    "type": "values",
+    "label": "Ability Values"
   }
 }

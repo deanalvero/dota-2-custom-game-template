@@ -30,7 +30,5 @@
   "DOTA_UNIT_TARGET_ALL": "All",
   "DAMAGE_TYPE_MAGICAL": "Magical",
   "DAMAGE_TYPE_PHYSICAL": "Physical",
-  "DAMAGE_TYPE_PURE": "Pure",
-  "FIELD_FLOAT": "Float",
-  "FIELD_INTEGER": "Integer"
+  "DAMAGE_TYPE_PURE": "Pure"
 }

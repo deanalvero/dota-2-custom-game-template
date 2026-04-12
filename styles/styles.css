@@ -177,9 +177,8 @@ h4 { color: var(--text-muted); margin: 12px 0 6px; font-size: 12px; text-transfo
 }
 .texture-preview:hover { border-color: var(--border-hover); }
 
-.special-list  { display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; }
-.special-row   { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
-.special-type  { max-width: 110px; flex-shrink: 0; }
+.value-list  { display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; }
+.value-row   { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
 .special-key   { max-width: 150px; }
 .special-value { max-width: 200px; }
 
