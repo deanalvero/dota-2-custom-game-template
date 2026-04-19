@@ -3,277 +3,320 @@
     {
       "id": "play_sound_on_caster",
       "label": "Play Sound on Caster",
-      "requires": [
-        "caster"
-      ],
-      "params": {
-        "sound": {
-          "type": "search_select",
-          "source": "sounds.json"
-        }
-      },
+      "requires": ["caster"],
+      "params": { "sound": { "type": "search_select", "source": "sounds.json" } },
       "template": "EmitSoundOn(\"{{sound}}\", caster)"
     },
     {
       "id": "play_sound_on_target",
       "label": "Play Sound on Target",
-      "requires": [
-        "target"
-      ],
-      "params": {
-        "sound": {
-          "type": "search_select",
-          "source": "sounds.json"
-        }
-      },
+      "requires": ["target"],
+      "params": { "sound": { "type": "search_select", "source": "sounds.json" } },
       "template": "EmitSoundOn(\"{{sound}}\", target)"
     },
     {
       "id": "deal_damage_to_target",
       "label": "Deal Damage to Target",
-      "requires": [
-        "caster",
-        "target",
-        "ability"
-      ],
+      "requires": ["caster", "target", "ability"],
       "params": {
-        "damage_type": {
-          "type": "select",
-          "options": [
-            "DAMAGE_TYPE_MAGICAL",
-            "DAMAGE_TYPE_PHYSICAL",
-            "DAMAGE_TYPE_PURE"
-          ]
-        },
-        "special_value": {
-          "type": "text",
-          "placeholder": "e.g. damage"
-        }
+        "damage_type": { "type": "select", "options": ["DAMAGE_TYPE_MAGICAL","DAMAGE_TYPE_PHYSICAL","DAMAGE_TYPE_PURE"] },
+        "special_value": { "type": "text", "placeholder": "e.g. damage" }
       },
       "template": "ApplyDamage({ victim = target, attacker = caster, damage = ability:GetSpecialValueFor(\"{{special_value}}\"), damage_type = {{damage_type}} })"
     },
     {
       "id": "stun_target",
       "label": "Stun Target",
-      "requires": [
-        "caster",
-        "target",
-        "ability"
-      ],
-      "params": {
-        "duration": {
-          "type": "text",
-          "placeholder": "e.g. ability:GetSpecialValueFor(\"stun_duration\")"
-        }
-      },
+      "requires": ["caster", "target", "ability"],
+      "params": { "duration": { "type": "text", "placeholder": "e.g. ability:GetSpecialValueFor(\"stun_duration\")" } },
       "template": "target:AddNewModifier(caster, ability, \"modifier_stunned\", { duration = {{duration}} })"
     },
     {
       "id": "knockback_target",
       "label": "Knockback Target",
-      "requires": [
-        "caster",
-        "target",
-        "ability"
-      ],
+      "requires": ["caster", "target", "ability"],
       "params": {
-        "distance": {
-          "type": "text",
-          "placeholder": "e.g. ability:GetSpecialValueFor(\"knockback_distance\")"
-        },
-        "duration": {
-          "type": "text",
-          "placeholder": "e.g. 0.3"
-        },
-        "height": {
-          "type": "text",
-          "placeholder": "e.g. 50"
-        }
+        "distance": { "type": "text", "placeholder": "e.g. ability:GetSpecialValueFor(\"knockback_distance\")" },
+        "duration": { "type": "text", "placeholder": "e.g. 0.3" },
+        "height":   { "type": "text", "placeholder": "e.g. 50" }
       },
       "template": "target:AddNewModifier(caster, ability, \"modifier_knockback\", { duration = {{duration}}, knockback_duration = {{duration}}, knockback_distance = {{distance}}, knockback_height = {{height}}, center_x = caster:GetOrigin().x, center_y = caster:GetOrigin().y, center_z = caster:GetOrigin().z })"
     },
     {
       "id": "kill_trees_in_radius",
       "label": "Kill Trees in Radius",
-      "requires": [
-        "point",
-        "ability"
-      ],
-      "params": {
-        "special_value": {
-          "type": "text",
-          "placeholder": "e.g. radius"
-        }
-      },
+      "requires": ["point", "ability"],
+      "params": { "special_value": { "type": "text", "placeholder": "e.g. radius" } },
       "template": "GridNav:DestroyTreesAroundPoint(point, ability:GetSpecialValueFor(\"{{special_value}}\"), true)"
+    },
+    {
+      "id": "find_units_in_radius",
+      "label": "Find Units in Radius",
+      "requires": ["caster", "ability"],
+      "params": {
+        "special_value":  { "type": "text", "placeholder": "e.g. radius" },
+        "target_team":    { "type": "select", "options": ["DOTA_UNIT_TARGET_TEAM_ENEMY","DOTA_UNIT_TARGET_TEAM_FRIENDLY","DOTA_UNIT_TARGET_TEAM_BOTH"] },
+        "target_type":    { "type": "select", "options": ["DOTA_UNIT_TARGET_HERO","DOTA_UNIT_TARGET_BASIC","DOTA_UNIT_TARGET_ALL"] }
+      },
+      "template": "local units = FindUnitsInRadius(caster:GetTeamNumber(), caster:GetOrigin(), nil, ability:GetSpecialValueFor(\"{{special_value}}\"), {{target_team}}, {{target_type}}, DOTA_UNIT_TARGET_FLAG_NONE, FIND_ANY_ORDER, false)"
     },
     {
       "id": "apply_modifier_to_target",
       "label": "Apply Modifier to Target",
-      "requires": [
-        "caster",
-        "target",
-        "ability"
-      ],
+      "requires": ["caster", "target", "ability"],
       "params": {
-        "modifier_name": {
-          "type": "text",
-          "placeholder": "e.g. modifier_my_debuff"
-        },
-        "duration": {
-          "type": "text",
-          "placeholder": "e.g. ability:GetSpecialValueFor(\"duration\")"
-        }
+        "modifier_name": { "type": "text", "placeholder": "e.g. modifier_my_debuff" },
+        "duration":      { "type": "text", "placeholder": "e.g. ability:GetSpecialValueFor(\"duration\")" }
       },
       "template": "target:AddNewModifier(caster, ability, \"{{modifier_name}}\", { duration = {{duration}} })"
     },
     {
       "id": "apply_modifier_to_caster",
       "label": "Apply Modifier to Caster",
-      "requires": [
-        "caster",
-        "ability"
-      ],
+      "requires": ["caster", "ability"],
       "params": {
-        "modifier_name": {
-          "type": "text",
-          "placeholder": "e.g. modifier_my_buff"
-        },
-        "duration": {
-          "type": "text",
-          "placeholder": "e.g. ability:GetSpecialValueFor(\"duration\")"
-        }
+        "modifier_name": { "type": "text", "placeholder": "e.g. modifier_my_buff" },
+        "duration":      { "type": "text", "placeholder": "e.g. ability:GetSpecialValueFor(\"duration\")" }
       },
       "template": "caster:AddNewModifier(caster, ability, \"{{modifier_name}}\", { duration = {{duration}} })"
     },
     {
+      "id": "remove_modifier_from_target",
+      "label": "Remove Modifier from Target",
+      "requires": ["target"],
+      "params": { "modifier_name": { "type": "text", "placeholder": "e.g. modifier_my_debuff" } },
+      "template": "target:RemoveModifierByName(\"{{modifier_name}}\")"
+    },
+    {
       "id": "create_thinker_at_point",
       "label": "Create Thinker at Cast Point",
-      "requires": [
-        "caster",
-        "ability",
-        "point"
-      ],
+      "requires": ["caster", "ability", "point"],
       "params": {
-        "modifier_name": {
-          "type": "text",
-          "placeholder": "e.g. modifier_my_thinker"
-        },
-        "duration": {
-          "type": "text",
-          "placeholder": "e.g. ability:GetSpecialValueFor(\"duration\")"
-        }
+        "modifier_name": { "type": "text", "placeholder": "e.g. modifier_my_thinker" },
+        "duration":      { "type": "text", "placeholder": "e.g. ability:GetSpecialValueFor(\"duration\")" }
       },
       "template": "CreateModifierThinker(caster, ability, \"{{modifier_name}}\", { duration = {{duration}} }, point, caster:GetTeamNumber(), false)"
     },
     {
       "id": "fire_tracking_projectile",
       "label": "Fire Tracking Projectile at Target",
-      "requires": [
-        "caster",
-        "target",
-        "ability"
-      ],
+      "requires": ["caster", "target", "ability"],
       "params": {
-        "particle": {
-          "type": "search_select",
-          "source": "particles.json"
-        },
-        "speed": {
-          "type": "text",
-          "placeholder": "e.g. 1200"
-        }
+        "particle": { "type": "search_select", "source": "particles.txt" },
+        "speed":    { "type": "text", "placeholder": "e.g. 1200" }
       },
       "template": "ProjectileManager:CreateTrackingProjectile({ Target = target, Source = caster, Ability = ability, EffectName = \"{{particle}}\", bDodgeable = true, iMoveSpeed = {{speed}}, flExpireTime = GameRules:GetGameTime() + 10 })"
     },
     {
+      "id": "fire_linear_projectile",
+      "label": "Fire Linear Projectile",
+      "requires": ["caster", "ability", "point"],
+      "params": {
+        "particle": { "type": "search_select", "source": "particles.txt" },
+        "speed":    { "type": "text", "placeholder": "e.g. 900" },
+        "distance": { "type": "text", "placeholder": "e.g. ability:GetSpecialValueFor(\"range\")" },
+        "radius":   { "type": "text", "placeholder": "e.g. ability:GetSpecialValueFor(\"radius\")" }
+      },
+      "template": "ProjectileManager:CreateLinearProjectile({ Source = caster, Ability = ability, EffectName = \"{{particle}}\", vSpawnOrigin = caster:GetOrigin(), fDistance = {{distance}}, fStartRadius = {{radius}}, fEndRadius = {{radius}}, iUnitTargetTeam = DOTA_UNIT_TARGET_TEAM_ENEMY, iUnitTargetType = DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC, bHasFrontalCone = false, bReplaceExisting = false, fExpireTime = GameRules:GetGameTime() + 10, vVelocity = (point - caster:GetOrigin()):Normalized() * {{speed}} })"
+    },
+    {
+      "id": "heal_target",
+      "label": "Heal Target",
+      "requires": ["caster", "target", "ability"],
+      "params": { "special_value": { "type": "text", "placeholder": "e.g. heal_amount" } },
+      "template": "target:Heal(ability:GetSpecialValueFor(\"{{special_value}}\"), caster)"
+    },
+    {
       "id": "heal_caster",
       "label": "Heal Caster",
-      "requires": [
-        "caster",
-        "ability"
-      ],
-      "params": {
-        "special_value": {
-          "type": "text",
-          "placeholder": "e.g. heal_amount"
-        }
-      },
+      "requires": ["caster", "ability"],
+      "params": { "special_value": { "type": "text", "placeholder": "e.g. heal_amount" } },
       "template": "caster:Heal(ability:GetSpecialValueFor(\"{{special_value}}\"), caster)"
+    },
+    {
+      "id": "purge_target",
+      "label": "Dispel (Purge) Target",
+      "requires": ["target"],
+      "params": {
+        "purge_buffs":  { "type": "select", "options": ["true", "false"] },
+        "purge_debuffs":{ "type": "select", "options": ["false", "true"] },
+        "strong_purge": { "type": "select", "options": ["false", "true"] }
+      },
+      "template": "target:Purge({{purge_buffs}}, {{purge_debuffs}}, false, {{strong_purge}}, false)"
+    },
+    {
+      "id": "blink_caster",
+      "label": "Blink Caster to Point",
+      "requires": ["caster", "ability", "point"],
+      "params": { "special_value": { "type": "text", "placeholder": "e.g. blink_range" } },
+      "template": "local blink_range = ability:GetSpecialValueFor(\"{{special_value}}\")\nlocal direction = (point - caster:GetOrigin()):Normalized()\nlocal distance = math.min((point - caster:GetOrigin()):Length2D(), blink_range)\ncaster:SetOrigin(caster:GetOrigin() + direction * distance)\nFindClearSpaceForUnit(caster, caster:GetOrigin(), true)"
+    },
+    {
+      "id": "set_ability_cooldown",
+      "label": "Put Ability on Cooldown",
+      "requires": ["ability"],
+      "params": { "special_value": { "type": "text", "placeholder": "e.g. ability:GetCooldown(ability:GetLevel() - 1)" } },
+      "template": "ability:StartCooldown({{special_value}})"
+    },
+    {
+      "id": "refund_mana",
+      "label": "Refund Mana to Caster",
+      "requires": ["caster", "ability"],
+      "params": { "special_value": { "type": "text", "placeholder": "e.g. ability:GetManaCost(ability:GetLevel() - 1)" } },
+      "template": "caster:GiveMana({{special_value}})"
+    },
+    {
+      "id": "add_particle",
+      "label": "Create Particle at Caster",
+      "requires": ["caster"],
+      "params": {
+        "particle": { "type": "search_select", "source": "particles.txt" },
+        "attach":   { "type": "select", "options": ["PATTACH_ABSORIGIN_FOLLOW","PATTACH_OVERHEAD_FOLLOW","PATTACH_POINT_FOLLOW"] }
+      },
+      "template": "local particle_fx = ParticleManager:CreateParticle(\"{{particle}}\", {{attach}}, caster)\nParticleManager:ReleaseParticleIndex(particle_fx)"
     }
   ],
   "OnChannelFinish": [
     {
       "id": "channel_finish_play_sound",
       "label": "Play Sound on Caster",
-      "requires": [
-        "caster"
-      ],
-      "params": {
-        "sound": {
-          "type": "search_select",
-          "source": "sounds.json"
-        }
-      },
+      "requires": ["caster"],
+      "params": { "sound": { "type": "search_select", "source": "sounds.json" } },
       "template": "EmitSoundOn(\"{{sound}}\", caster)"
     },
     {
       "id": "channel_finish_deal_damage",
       "label": "Deal Damage to Target (if not interrupted)",
-      "requires": [
-        "caster",
-        "target",
-        "ability"
-      ],
+      "requires": ["caster", "target", "ability"],
       "params": {
-        "damage_type": {
-          "type": "select",
-          "options": [
-            "DAMAGE_TYPE_MAGICAL",
-            "DAMAGE_TYPE_PHYSICAL",
-            "DAMAGE_TYPE_PURE"
-          ]
-        },
-        "special_value": {
-          "type": "text",
-          "placeholder": "e.g. damage"
-        }
+        "damage_type":   { "type": "select", "options": ["DAMAGE_TYPE_MAGICAL","DAMAGE_TYPE_PHYSICAL","DAMAGE_TYPE_PURE"] },
+        "special_value": { "type": "text", "placeholder": "e.g. damage" }
       },
       "template": "if not interrupted then\n        ApplyDamage({ victim = target, attacker = caster, damage = ability:GetSpecialValueFor(\"{{special_value}}\"), damage_type = {{damage_type}} })\n    end"
     },
     {
       "id": "channel_finish_remove_modifier",
       "label": "Remove Modifier from Caster",
-      "requires": [
-        "caster"
-      ],
-      "params": {
-        "modifier_name": {
-          "type": "text",
-          "placeholder": "e.g. modifier_my_channel_buff"
-        }
-      },
+      "requires": ["caster"],
+      "params": { "modifier_name": { "type": "text", "placeholder": "e.g. modifier_my_channel_buff" } },
       "template": "caster:RemoveModifierByName(\"{{modifier_name}}\")"
     },
     {
       "id": "channel_finish_apply_modifier_to_target",
       "label": "Apply Modifier to Target (if not interrupted)",
-      "requires": [
-        "caster",
-        "target",
-        "ability"
-      ],
+      "requires": ["caster", "target", "ability"],
       "params": {
-        "modifier_name": {
-          "type": "text",
-          "placeholder": "e.g. modifier_my_debuff"
-        },
-        "duration": {
-          "type": "text",
-          "placeholder": "e.g. ability:GetSpecialValueFor(\"duration\")"
-        }
+        "modifier_name": { "type": "text", "placeholder": "e.g. modifier_my_debuff" },
+        "duration":      { "type": "text", "placeholder": "e.g. ability:GetSpecialValueFor(\"duration\")" }
       },
       "template": "if not interrupted then\n        target:AddNewModifier(caster, ability, \"{{modifier_name}}\", { duration = {{duration}} })\n    end"
+    },
+    {
+      "id": "channel_finish_find_units",
+      "label": "Find Units in Radius (if not interrupted)",
+      "requires": ["caster", "ability"],
+      "params": {
+        "special_value": { "type": "text", "placeholder": "e.g. radius" },
+        "target_team":   { "type": "select", "options": ["DOTA_UNIT_TARGET_TEAM_ENEMY","DOTA_UNIT_TARGET_TEAM_FRIENDLY","DOTA_UNIT_TARGET_TEAM_BOTH"] }
+      },
+      "template": "if not interrupted then\n        local units = FindUnitsInRadius(caster:GetTeamNumber(), caster:GetOrigin(), nil, ability:GetSpecialValueFor(\"{{special_value}}\"), {{target_team}}, DOTA_UNIT_TARGET_ALL, DOTA_UNIT_TARGET_FLAG_NONE, FIND_ANY_ORDER, false)\n    end"
+    }
+  ],
+  "OnChannelThink": [
+    {
+      "id": "think_deal_damage_aoe",
+      "label": "Deal Damage to Nearby Enemies",
+      "requires": ["caster", "ability"],
+      "params": {
+        "special_value": { "type": "text", "placeholder": "e.g. damage_per_second" },
+        "radius_value":  { "type": "text", "placeholder": "e.g. radius" },
+        "damage_type":   { "type": "select", "options": ["DAMAGE_TYPE_MAGICAL","DAMAGE_TYPE_PHYSICAL","DAMAGE_TYPE_PURE"] }
+      },
+      "template": "local units = FindUnitsInRadius(caster:GetTeamNumber(), caster:GetOrigin(), nil, ability:GetSpecialValueFor(\"{{radius_value}}\"), DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_ALL, DOTA_UNIT_TARGET_FLAG_NONE, FIND_ANY_ORDER, false)\nfor _, unit in ipairs(units) do\n        ApplyDamage({ victim = unit, attacker = caster, damage = ability:GetSpecialValueFor(\"{{special_value}}\") * interval, damage_type = {{damage_type}} })\n    end"
+    },
+    {
+      "id": "think_play_sound",
+      "label": "Play Sound on Caster",
+      "requires": ["caster"],
+      "params": { "sound": { "type": "search_select", "source": "sounds.json" } },
+      "template": "EmitSoundOn(\"{{sound}}\", caster)"
+    },
+    {
+      "id": "think_heal_caster",
+      "label": "Heal Caster Per Interval",
+      "requires": ["caster", "ability"],
+      "params": { "special_value": { "type": "text", "placeholder": "e.g. heal_per_second" } },
+      "template": "caster:Heal(ability:GetSpecialValueFor(\"{{special_value}}\") * interval, caster)"
+    }
+  ],
+  "OnProjectileHit": [
+    {
+      "id": "proj_deal_damage",
+      "label": "Deal Damage to Hit Target",
+      "requires": ["caster", "ability"],
+      "params": {
+        "damage_type":   { "type": "select", "options": ["DAMAGE_TYPE_MAGICAL","DAMAGE_TYPE_PHYSICAL","DAMAGE_TYPE_PURE"] },
+        "special_value": { "type": "text", "placeholder": "e.g. damage" }
+      },
+      "template": "if target ~= nil then\n        ApplyDamage({ victim = target, attacker = caster, damage = ability:GetSpecialValueFor(\"{{special_value}}\"), damage_type = {{damage_type}} })\n    end"
+    },
+    {
+      "id": "proj_apply_modifier",
+      "label": "Apply Modifier to Hit Target",
+      "requires": ["caster", "ability"],
+      "params": {
+        "modifier_name": { "type": "text", "placeholder": "e.g. modifier_my_debuff" },
+        "duration":      { "type": "text", "placeholder": "e.g. ability:GetSpecialValueFor(\"duration\")" }
+      },
+      "template": "if target ~= nil then\n        target:AddNewModifier(caster, ability, \"{{modifier_name}}\", { duration = {{duration}} })\n    end"
+    },
+    {
+      "id": "proj_stun_target",
+      "label": "Stun Hit Target",
+      "requires": ["caster", "ability"],
+      "params": { "duration": { "type": "text", "placeholder": "e.g. ability:GetSpecialValueFor(\"stun_duration\")" } },
+      "template": "if target ~= nil then\n        target:AddNewModifier(caster, ability, \"modifier_stunned\", { duration = {{duration}} })\n    end"
+    },
+    {
+      "id": "proj_play_sound",
+      "label": "Play Sound at Impact",
+      "requires": [],
+      "params": { "sound": { "type": "search_select", "source": "sounds.json" } },
+      "template": "EmitSoundOnLocationWithCaster(location, \"{{sound}}\", caster)"
+    },
+    {
+      "id": "proj_aoe_damage",
+      "label": "AoE Damage at Impact Point",
+      "requires": ["caster", "ability"],
+      "params": {
+        "radius_value":  { "type": "text", "placeholder": "e.g. radius" },
+        "special_value": { "type": "text", "placeholder": "e.g. damage" },
+        "damage_type":   { "type": "select", "options": ["DAMAGE_TYPE_MAGICAL","DAMAGE_TYPE_PHYSICAL","DAMAGE_TYPE_PURE"] }
+      },
+      "template": "local units = FindUnitsInRadius(caster:GetTeamNumber(), location, nil, ability:GetSpecialValueFor(\"{{radius_value}}\"), DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_ALL, DOTA_UNIT_TARGET_FLAG_NONE, FIND_ANY_ORDER, false)\n    for _, unit in ipairs(units) do\n        ApplyDamage({ victim = unit, attacker = caster, damage = ability:GetSpecialValueFor(\"{{special_value}}\"), damage_type = {{damage_type}} })\n    end"
+    }
+  ],
+  "OnUpgrade": [
+    {
+      "id": "upgrade_level_special",
+      "label": "Log Level Up (Debug)",
+      "requires": ["ability", "level"],
+      "params": {},
+      "template": "print(\"[Debug] \" .. ability:GetAbilityName() .. \" upgraded to level \" .. level)"
+    },
+    {
+      "id": "upgrade_remove_cooldown",
+      "label": "Clear Cooldown on Upgrade",
+      "requires": ["ability"],
+      "params": {},
+      "template": "ability:EndCooldown()"
+    },
+    {
+      "id": "upgrade_refresh_modifier",
+      "label": "Refresh Modifier on Upgrade",
+      "requires": ["caster", "ability"],
+      "params": { "modifier_name": { "type": "text", "placeholder": "e.g. modifier_my_passive" } },
+      "template": "if caster:HasModifier(\"{{modifier_name}}\") then\n        caster:RemoveModifierByName(\"{{modifier_name}}\")\n        caster:AddNewModifier(caster, ability, \"{{modifier_name}}\", {})\n    end"
     }
   ]
 }

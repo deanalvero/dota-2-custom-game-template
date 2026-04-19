@@ -8,7 +8,13 @@ const STORAGE_KEY = "abilitymaker_state_v4";
 const DEFAULT_STATE = () => ({
   AbilityBehavior: [], AbilityUnitTargetType: [], AbilityUnitTargetFlags: [],
   AbilityValues: [], _kvDisabled: new Set(), _activeFields: new Set(),
-  Lua: { OnSpellStart: { actions: [] }, OnChannelFinish: { actions: [] } },
+  Lua: {
+    OnSpellStart:    { actions: [] },
+    OnChannelFinish: { actions: [] },
+    OnChannelThink:  { actions: [] },
+    OnProjectileHit: { actions: [] },
+    OnUpgrade:       { actions: [] },
+  },
   modifier: {
     ModifierName: "modifier_my_ability", ScriptFile: "modifiers/modifier_my_ability.lua",
     IsDebuff: false, IsHidden: false, IsPurgable: true, IsStunDebuff: false, IsPermanent: false,
@@ -23,18 +29,18 @@ const DEFAULT_STATE = () => ({
 
 const state = loadState();
 
-const [schema, snippetsJson, modSnippetsJson, soundsJson, particlesJson, labels, modifierProps] = await Promise.all([
+const [schema, snippetsJson, modSnippetsJson, soundsJson, particlesTxt, labels, modifierProps] = await Promise.all([
   fetch('./data/ability_schema.json').then(r => r.json()),
   fetch('./data/lua_snippets.json').then(r => r.json()),
   fetch('./data/modifier_snippets.json').then(r => r.json()),
   fetch('./data/sounds.json').then(r => r.json()),
-  fetch('./data/particles.json').then(r => r.json()),
+  fetch('./data/particles.txt').then(r => r.text()),
   fetch('./data/option_labels.json').then(r => r.json()),
   fetch('./data/modifier_properties.json').then(r => r.json()),
 ]);
 
 const flatSounds    = soundsJson.flatMap(s => s.sounds.map(name => ({ name, file: s.soundfile })));
-const flatParticles = particlesJson.map(p => ({ name: p }));
+const flatParticles = particlesTxt.split('\n').map(s => s.trim()).filter(Boolean).map(p => ({ name: p }));
 
 initTheme();
 initTabs();
@@ -57,14 +63,31 @@ function applyTheme(t) {
 }
 
 function initTabs() {
+  function activateTab(tabId) {
+    document.querySelectorAll(".tab").forEach(b => b.classList.toggle("active", b.dataset.tab === tabId));
+    document.querySelectorAll(".tab-content").forEach(c => c.classList.toggle("active", c.id === tabId));
+  }
+
+  function getTabFromUrl() {
+    return new URLSearchParams(location.search).get("tab") ?? "ability";
+  }
+
+  function setTabInUrl(tabId) {
+    const params = new URLSearchParams(location.search);
+    params.set("tab", tabId);
+    history.pushState(null, "", `?${params}`);
+  }
+
+  activateTab(getTabFromUrl());
+
   document.querySelectorAll(".tab").forEach(btn => {
     btn.addEventListener("click", () => {
-      document.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
-      document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
-      btn.classList.add("active");
-      document.getElementById(btn.dataset.tab).classList.add("active");
+      setTabInUrl(btn.dataset.tab);
+      activateTab(btn.dataset.tab);
     });
   });
+
+  window.addEventListener("popstate", () => activateTab(getTabFromUrl()));
 }
 
 async function initAbilityTab() {
@@ -672,6 +695,9 @@ function deserializeState(raw) {
   s.Lua ??= {};
   s.Lua.OnSpellStart    ??= { actions: [] };
   s.Lua.OnChannelFinish ??= { actions: [] };
+  s.Lua.OnChannelThink  ??= { actions: [] };
+  s.Lua.OnProjectileHit ??= { actions: [] };
+  s.Lua.OnUpgrade       ??= { actions: [] };
   s.modifier ??= def.modifier;
   s.modifier.Properties ??= [];
   s.modifier.Events ??= def.modifier.Events;
@@ -681,16 +707,34 @@ function saveState() {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(serializeState(state))); } catch {}
 }
 function loadState() {
-  const hash = location.hash.slice(1);
-  if (hash) { try { const s = deserializeState(JSON.parse(decodeURIComponent(escape(atob(hash))))); if (s) return s; } catch {} }
-  try { const stored = localStorage.getItem(STORAGE_KEY); if (stored) { const s = deserializeState(JSON.parse(stored)); if (s) return s; } } catch {}
+  const params = new URLSearchParams(location.search);
+  const stateParam = params.get("state");
+  if (stateParam) {
+    try {
+      const s = deserializeState(JSON.parse(decodeURIComponent(escape(atob(stateParam)))));
+      if (s) return s;
+    } catch {}
+  }
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      const s = deserializeState(JSON.parse(stored));
+      if (s) return s;
+    }
+  } catch {}
   return DEFAULT_STATE();
 }
 function buildShareUrl() {
-  return `${location.origin}${location.pathname}#${btoa(unescape(encodeURIComponent(JSON.stringify(serializeState(state)))))}`;
+  const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(serializeState(state)))));
+  const params = new URLSearchParams(location.search);
+  params.set("state", encoded);
+  return `${location.origin}${location.pathname}?${params}`;
 }
 function syncUrlHash() {
-  history.replaceState(null, "", `#${btoa(unescape(encodeURIComponent(JSON.stringify(serializeState(state)))))}`);
+  const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(serializeState(state)))));
+  const params = new URLSearchParams(location.search);
+  params.set("state", encoded);
+  history.replaceState(null, "", `${location.pathname}?${params}`);
 }
 function download(filename, content) {
   const a = document.createElement("a");

@@ -122,10 +122,12 @@ h4 { color: var(--text-muted); margin: 12px 0 6px; font-size: 11px; text-transfo
   min-height: 20px;
 }
 .field-label {
+  display: block;
   font-size: 11px;
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  margin-bottom: 5px;
 }
 .field-hint { display: block; font-size: 11px; color: var(--text-dim); margin-top: 3px; }
 
@@ -452,6 +454,23 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(2px); }
 
 .topbar-actions { display: flex; align-items: center; gap: 8px; }
 
+.github-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--text-muted);
+  font-size: 12px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: border-color 0.15s, color 0.15s;
+}
+.github-link:hover { border-color: var(--border-hover); color: var(--text); }
+.github-icon { width: 14px; height: 14px; flex-shrink: 0; }
+
 .share-btn {
   padding: 6px 12px;
   background: var(--surface);
@@ -542,17 +561,18 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(2px); }
 .file-info-note code { font-family: monospace; font-size: 11px; }
 
 .btn-edit-behaviors {
-  padding: 5px 12px;
+  padding: 3px 10px;
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 4px;
+  border: 1px dashed var(--border);
+  border-radius: 12px;
   color: var(--text-muted);
-  font-size: 12px;
+  font-size: 11px;
   cursor: pointer;
-  margin-top: 6px;
-  transition: border-color 0.15s;
+  transition: border-color 0.15s, color 0.15s;
+  white-space: nowrap;
+  align-self: center;
 }
-.btn-edit-behaviors:hover { border-color: var(--border-hover); color: var(--text); }
+.btn-edit-behaviors:hover { border-color: var(--accent); color: var(--accent); }
 
 .btn-add-kv {
   padding: 6px 14px;
@@ -584,20 +604,32 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(2px); }
 .behavior-tags {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 5px;
-  min-height: 28px;
 }
 .behavior-tag {
   display: inline-flex;
   align-items: center;
-  padding: 3px 9px;
+  gap: 4px;
+  padding: 3px 6px 3px 9px;
   background: var(--tag-bg);
   border: 1px solid var(--tag-border);
   border-radius: 12px;
   color: var(--tag-text);
   font-size: 11px;
 }
-.behavior-empty { font-size: 12px; color: var(--text-dim); }
+.behavior-tag-del {
+  background: none;
+  border: none;
+  color: var(--tag-text);
+  cursor: pointer;
+  font-size: 13px;
+  line-height: 1;
+  padding: 0 1px;
+  opacity: 0.6;
+  transition: opacity 0.12s;
+}
+.behavior-tag-del:hover { opacity: 1; }
 
 .behavior-option-list { display: flex; flex-direction: column; gap: 4px; max-height: 320px; overflow-y: auto; }
 .behavior-option {

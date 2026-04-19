@@ -183,12 +183,12 @@ function renderBehavior(wrapper, key, config, state, onChange, labels, opts) {
   const editBtn = document.createElement("button");
   editBtn.type = "button";
   editBtn.className = "btn-edit-behaviors";
-  editBtn.textContent = "Edit Behaviors";
+  editBtn.textContent = "+ Behaviors";
   editBtn.addEventListener("click", () => {
     opts.onBehaviorEdit?.({
       options: config.options,
       labels,
-      current: state[key],
+      current: [...state[key]],
       onConfirm: selected => {
         state[key] = selected;
         renderTags();
@@ -199,23 +199,29 @@ function renderBehavior(wrapper, key, config, state, onChange, labels, opts) {
 
   function renderTags() {
     tagsEl.innerHTML = "";
-    if (!state[key].length) {
-      const empty = document.createElement("span");
-      empty.className = "behavior-empty";
-      empty.textContent = "None selected";
-      tagsEl.appendChild(empty);
-    } else {
-      state[key].forEach(b => {
-        const tag = document.createElement("span");
-        tag.className = "behavior-tag";
-        tag.textContent = labels[b] ?? b;
-        tagsEl.appendChild(tag);
+    state[key].forEach((b, i) => {
+      const tag = document.createElement("span");
+      tag.className = "behavior-tag";
+      const label = document.createElement("span");
+      label.textContent = labels[b] ?? b;
+      const del = document.createElement("button");
+      del.type = "button";
+      del.className = "behavior-tag-del";
+      del.setAttribute("aria-label", `Remove ${labels[b] ?? b}`);
+      del.textContent = "×";
+      del.addEventListener("click", () => {
+        state[key].splice(i, 1);
+        renderTags();
+        onChange();
       });
-    }
+      tag.append(label, del);
+      tagsEl.appendChild(tag);
+    });
+    tagsEl.appendChild(editBtn);
   }
 
   renderTags();
-  wrapper.append(tagsEl, editBtn);
+  wrapper.appendChild(tagsEl);
 }
 
 function renderValues(wrapper, key, state, onChange) {

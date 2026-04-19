@@ -6,6 +6,7 @@ const EVENT_SIGNATURES = {
   OnChannelThink:  name => `function ${name}:OnChannelThink(interval)`,
   OnProjectileHit: name => `function ${name}:OnProjectileHit(target, location)`,
   OnUpgrade:       name => `function ${name}:OnUpgrade()`,
+  OnOwnerDied:     name => `function ${name}:OnOwnerDied()`,
 };
 
 export function generateLua(state, snippetsJson) {
@@ -18,6 +19,7 @@ export function generateLua(state, snippetsJson) {
 
   const impliedEvents = new Set(Object.keys(state.Lua ?? {}));
   if (behaviors.includes("DOTA_ABILITY_BEHAVIOR_CHANNELLED")) impliedEvents.add("OnChannelFinish");
+  if (behaviors.includes("DOTA_ABILITY_BEHAVIOR_CHANNELLED")) impliedEvents.add("OnChannelThink");
 
   for (const event of impliedEvents) {
     (state.Lua?.[event]?.actions ?? []).forEach(a => {
@@ -60,14 +62,14 @@ export function generateKV(state) {
   const disabled  = state._kvDisabled ?? new Set();
   const active    = state._activeFields ?? new Set();
   const behaviors = state.AbilityBehavior ?? [];
-  const behavior  = behaviors.length ? behaviors.join(" | ") : "DOTA_ABILITY_BEHAVIOR_NO_TARGET";
+  const behavior  = behaviors.length ? behaviors.join(" | ") : null;
   const targetType = (state.AbilityUnitTargetType ?? []).join(" | ");
 
   const lines = [
     `"${name}"`, "{",
-    kv("BaseClass",       "ability_lua"),
-    kv("ScriptFile",      state.ScriptFile  || ""),
-    kv("AbilityBehavior", behavior),
+    kv("BaseClass",   "ability_lua"),
+    kv("ScriptFile",  state.ScriptFile || ""),
+    ...(behavior ? [kv("AbilityBehavior", behavior)] : []),
   ];
 
   const opt = (key, val) => {

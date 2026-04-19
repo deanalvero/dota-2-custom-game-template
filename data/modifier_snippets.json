@@ -19,7 +19,7 @@
       "label": "Attach Particle to Parent",
       "requires": ["parent"],
       "params": {
-        "particle": { "type": "search_select", "source": "particles.json" },
+        "particle": { "type": "search_select", "source": "particles.txt" },
         "attach":   { "type": "select", "options": ["PATTACH_ABSORIGIN_FOLLOW", "PATTACH_OVERHEAD_FOLLOW", "PATTACH_POINT_FOLLOW", "PATTACH_ROOTBONE_FOLLOW"] }
       },
       "template": "if IsServer() then\n        self.particle = ParticleManager:CreateParticle(\"{{particle}}\", {{attach}}, parent)\n        self:AddParticle(self.particle, false, false, -1, false, false)\n    end"
