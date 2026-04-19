@@ -1,0 +1,79 @@
+{
+  "OnCreated": [
+    {
+      "id": "mc_start_interval_think",
+      "label": "Start Interval Think",
+      "requires": [],
+      "params": { "interval": { "type": "text", "placeholder": "e.g. 0.5" } },
+      "template": "if IsServer() then\n        self:StartIntervalThink({{interval}})\n    end"
+    },
+    {
+      "id": "mc_emit_sound",
+      "label": "Play Sound on Parent",
+      "requires": ["parent"],
+      "params": { "sound": { "type": "search_select", "source": "sounds.json" } },
+      "template": "if IsServer() then\n        EmitSoundOn(\"{{sound}}\", parent)\n    end"
+    },
+    {
+      "id": "mc_attach_particle",
+      "label": "Attach Particle to Parent",
+      "requires": ["parent"],
+      "params": {
+        "particle": { "type": "search_select", "source": "particles.json" },
+        "attach":   { "type": "select", "options": ["PATTACH_ABSORIGIN_FOLLOW", "PATTACH_OVERHEAD_FOLLOW", "PATTACH_POINT_FOLLOW", "PATTACH_ROOTBONE_FOLLOW"] }
+      },
+      "template": "if IsServer() then\n        self.particle = ParticleManager:CreateParticle(\"{{particle}}\", {{attach}}, parent)\n        self:AddParticle(self.particle, false, false, -1, false, false)\n    end"
+    }
+  ],
+  "OnRefresh": [
+    {
+      "id": "mr_restart_interval",
+      "label": "Restart Interval Think",
+      "requires": [],
+      "params": { "interval": { "type": "text", "placeholder": "e.g. 0.5" } },
+      "template": "if IsServer() then\n        self:StartIntervalThink({{interval}})\n    end"
+    }
+  ],
+  "OnDestroy": [
+    {
+      "id": "md_stop_sound",
+      "label": "Stop Sound on Parent",
+      "requires": ["parent"],
+      "params": { "sound": { "type": "search_select", "source": "sounds.json" } },
+      "template": "if IsServer() then\n        StopSoundOn(\"{{sound}}\", parent)\n    end"
+    },
+    {
+      "id": "md_stop_interval",
+      "label": "Stop Interval Think",
+      "requires": [],
+      "params": {},
+      "template": "if IsServer() then\n        self:StartIntervalThink(-1)\n    end"
+    }
+  ],
+  "OnIntervalThink": [
+    {
+      "id": "mit_deal_damage",
+      "label": "Deal Damage to Parent (DoT)",
+      "requires": ["parent", "caster", "ability"],
+      "params": {
+        "damage_type": { "type": "select", "options": ["DAMAGE_TYPE_MAGICAL", "DAMAGE_TYPE_PHYSICAL", "DAMAGE_TYPE_PURE"] },
+        "special_value": { "type": "text", "placeholder": "e.g. damage_per_second" }
+      },
+      "template": "if IsServer() then\n        ApplyDamage({ victim = parent, attacker = caster, damage = ability:GetSpecialValueFor(\"{{special_value}}\"), damage_type = {{damage_type}} })\n    end"
+    },
+    {
+      "id": "mit_heal_parent",
+      "label": "Heal Parent (HoT)",
+      "requires": ["parent", "ability"],
+      "params": { "special_value": { "type": "text", "placeholder": "e.g. heal_per_second" } },
+      "template": "if IsServer() then\n        parent:Heal(ability:GetSpecialValueFor(\"{{special_value}}\"), parent)\n    end"
+    },
+    {
+      "id": "mit_emit_sound",
+      "label": "Emit Sound on Parent",
+      "requires": ["parent"],
+      "params": { "sound": { "type": "search_select", "source": "sounds.json" } },
+      "template": "EmitSoundOn(\"{{sound}}\", parent)"
+    }
+  ]
+}

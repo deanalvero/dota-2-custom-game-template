@@ -1,10 +1,16 @@
-export async function renderForm(schema, container, state, onChange, labels = {}) {
-  state._kvDisabled = state._kvDisabled ?? new Set();
+export async function renderForm(schema, container, state, onChange, labels = {}, opts = {}) {
+  state._kvDisabled   = state._kvDisabled   ?? new Set();
+  state._activeFields = state._activeFields ?? new Set();
 
   for (const [key, config] of Object.entries(schema)) {
+    const isAddable = !!config.addable;
+    const isCore    = !!config.core;
+
     const wrapper = document.createElement("div");
     wrapper.className = "field";
+    wrapper.dataset.fieldKey = key;
     if (state._kvDisabled.has(key)) wrapper.classList.add("kv-disabled");
+    if (isAddable && !state._activeFields.has(key)) wrapper.style.display = "none";
 
     const labelRow = document.createElement("div");
     labelRow.className = "field-label-row";
@@ -14,45 +20,59 @@ export async function renderForm(schema, container, state, onChange, labels = {}
     labelEl.textContent = config.label ?? key;
     labelRow.appendChild(labelEl);
 
-    if (config.optional) {
-      const toggle = document.createElement("button");
-      toggle.type = "button";
-      toggle.className = "kv-toggle";
-      toggle.title = "Toggle inclusion in KV output";
-      toggle.setAttribute("aria-pressed", String(!state._kvDisabled.has(key)));
-      toggle.textContent = state._kvDisabled.has(key) ? "KV off" : "KV on";
-      toggle.addEventListener("click", () => {
-        const isDisabled = state._kvDisabled.has(key);
-        if (isDisabled) {
-          state._kvDisabled.delete(key);
-          wrapper.classList.remove("kv-disabled");
-          toggle.textContent = "KV on";
-          toggle.setAttribute("aria-pressed", "true");
-        } else {
-          state._kvDisabled.add(key);
-          wrapper.classList.add("kv-disabled");
-          toggle.textContent = "KV off";
-          toggle.setAttribute("aria-pressed", "false");
-        }
+    if (isAddable) {
+      const kvToggle = document.createElement("button");
+      kvToggle.type = "button";
+      kvToggle.className = "kv-toggle";
+      kvToggle.title = "Toggle inclusion in KV output";
+      kvToggle.setAttribute("aria-pressed", String(!state._kvDisabled.has(key)));
+      kvToggle.textContent = state._kvDisabled.has(key) ? "KV off" : "KV on";
+      kvToggle.addEventListener("click", () => {
+        const off = state._kvDisabled.has(key);
+        off ? state._kvDisabled.delete(key) : state._kvDisabled.add(key);
+        wrapper.classList.toggle("kv-disabled", !off);
+        kvToggle.textContent = off ? "KV on" : "KV off";
+        kvToggle.setAttribute("aria-pressed", String(off));
         onChange();
       });
-      labelRow.appendChild(toggle);
+      labelRow.appendChild(kvToggle);
+
+      const removeBtn = document.createElement("button");
+      removeBtn.type = "button";
+      removeBtn.className = "field-remove";
+      removeBtn.title = "Remove field";
+      removeBtn.textContent = "×";
+      removeBtn.addEventListener("click", () => {
+        state._activeFields.delete(key);
+        wrapper.style.display = "none";
+        onChange();
+      });
+      labelRow.appendChild(removeBtn);
     }
 
     wrapper.appendChild(labelRow);
 
     switch (config.type) {
-      case "text":        renderText(wrapper, key, config, state, onChange);                  break;
-      case "number":      renderNumber(wrapper, key, config, state, onChange);                break;
-      case "perlevel":    renderPerLevel(wrapper, key, config, state, onChange);              break;
-      case "multiselect": renderMultiselect(wrapper, key, config, state, onChange, labels);   break;
-      case "select":      await renderSelect(wrapper, key, config, state, onChange, labels);  break;
-      case "values":      renderValues(wrapper, key, state, onChange);                        break;
-      default: console.warn(`formRenderer: unknown field type "${config.type}" for "${key}"`);
+      case "text":        renderText(wrapper, key, config, state, onChange);                           break;
+      case "number":      renderNumber(wrapper, key, config, state, onChange);                         break;
+      case "perlevel":    renderPerLevel(wrapper, key, config, state, onChange);                       break;
+      case "multiselect": renderMultiselect(wrapper, key, config, state, onChange, labels);            break;
+      case "select":      await renderSelect(wrapper, key, config, state, onChange, labels);           break;
+      case "behavior":    renderBehavior(wrapper, key, config, state, onChange, labels, opts);         break;
+      case "values":      renderValues(wrapper, key, state, onChange);                                 break;
+      default: console.warn(`Unknown field type "${config.type}" for "${key}"`);
     }
 
     container.appendChild(wrapper);
   }
+}
+
+export function showAddableField(container, key, state, onChange) {
+  const wrapper = container.querySelector(`[data-field-key="${key}"]`);
+  if (!wrapper) return;
+  state._activeFields.add(key);
+  wrapper.style.display = "";
+  onChange();
 }
 
 function renderText(wrapper, key, config, state, onChange) {
@@ -117,15 +137,9 @@ async function renderSelect(wrapper, key, config, state, onChange, labels) {
   let options = config.options ?? [];
   if (config.source) {
     try {
-      options = await fetch(`./data/${config.source}`).then(r => {
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        return r.json();
-      });
-    } catch (err) {
-      console.error(`formRenderer: failed to load source "${config.source}"`, err);
-    }
+      options = await fetch(`./data/${config.source}`).then(r => r.json());
+    } catch (e) { console.error(`Failed to load "${config.source}"`, e); }
   }
-
   const sel = document.createElement("select");
   sel.className = "field-input";
   options.forEach(opt => {
@@ -152,13 +166,56 @@ async function renderSelect(wrapper, key, config, state, onChange, labels) {
       img.src = config.previewUrl.replace("{{value}}", sel.value);
       onChange();
     });
-    row.appendChild(sel);
-    row.appendChild(img);
+    row.append(sel, img);
     wrapper.appendChild(row);
   } else {
     sel.addEventListener("change", () => { state[key] = sel.value; onChange(); });
     wrapper.appendChild(sel);
   }
+}
+
+function renderBehavior(wrapper, key, config, state, onChange, labels, opts) {
+  state[key] = state[key] ?? [];
+
+  const tagsEl = document.createElement("div");
+  tagsEl.className = "behavior-tags";
+
+  const editBtn = document.createElement("button");
+  editBtn.type = "button";
+  editBtn.className = "btn-edit-behaviors";
+  editBtn.textContent = "Edit Behaviors";
+  editBtn.addEventListener("click", () => {
+    opts.onBehaviorEdit?.({
+      options: config.options,
+      labels,
+      current: state[key],
+      onConfirm: selected => {
+        state[key] = selected;
+        renderTags();
+        onChange();
+      },
+    });
+  });
+
+  function renderTags() {
+    tagsEl.innerHTML = "";
+    if (!state[key].length) {
+      const empty = document.createElement("span");
+      empty.className = "behavior-empty";
+      empty.textContent = "None selected";
+      tagsEl.appendChild(empty);
+    } else {
+      state[key].forEach(b => {
+        const tag = document.createElement("span");
+        tag.className = "behavior-tag";
+        tag.textContent = labels[b] ?? b;
+        tagsEl.appendChild(tag);
+      });
+    }
+  }
+
+  renderTags();
+  wrapper.append(tagsEl, editBtn);
 }
 
 function renderValues(wrapper, key, state, onChange) {
@@ -168,7 +225,6 @@ function renderValues(wrapper, key, state, onChange) {
 
   function renderEntries() {
     list.innerHTML = "";
-
     state[key].forEach((entry, i) => {
       const row = document.createElement("div");
       row.className = "value-row draggable-item";
@@ -196,63 +252,45 @@ function renderValues(wrapper, key, state, onChange) {
       removeBtn.textContent = "✕";
       removeBtn.className = "btn-remove";
       removeBtn.type = "button";
-      removeBtn.addEventListener("click", () => {
-        state[key].splice(i, 1);
-        renderEntries();
-        onChange();
-      });
+      removeBtn.addEventListener("click", () => { state[key].splice(i, 1); renderEntries(); onChange(); });
 
       row.append(handle, keyInput, valInput, removeBtn);
       list.appendChild(row);
     });
-
     attachDragReorder(list, state[key], () => { renderEntries(); onChange(); });
   }
 
   renderEntries();
-
   const addBtn = document.createElement("button");
   addBtn.textContent = "+ Add Ability Value";
   addBtn.className = "btn-add";
   addBtn.type = "button";
-  addBtn.addEventListener("click", () => {
-    state[key].push({ key: "", value: "" });
-    renderEntries();
-    onChange();
-  });
-
+  addBtn.addEventListener("click", () => { state[key].push({ key: "", value: "" }); renderEntries(); onChange(); });
   wrapper.append(list, addBtn);
 }
 
 function attachDragReorder(listEl, dataArray, onReorder) {
   let dragSrcIndex = null;
-
   listEl.querySelectorAll(".draggable-item").forEach((item, index) => {
     const handle = item.querySelector(".drag-handle");
-
     handle.setAttribute("draggable", "true");
-
     handle.addEventListener("dragstart", e => {
       dragSrcIndex = index;
       e.dataTransfer.effectAllowed = "move";
       e.dataTransfer.setData("text/plain", String(index));
       requestAnimationFrame(() => item.classList.add("dragging"));
     });
-
     handle.addEventListener("dragend", () => {
       item.classList.remove("dragging");
       listEl.querySelectorAll(".draggable-item").forEach(el => el.classList.remove("drag-over"));
     });
-
     item.addEventListener("dragover", e => {
       e.preventDefault();
       e.dataTransfer.dropEffect = "move";
       listEl.querySelectorAll(".draggable-item").forEach(el => el.classList.remove("drag-over"));
       if (index !== dragSrcIndex) item.classList.add("drag-over");
     });
-
     item.addEventListener("dragleave", () => item.classList.remove("drag-over"));
-
     item.addEventListener("drop", e => {
       e.preventDefault();
       item.classList.remove("drag-over");

@@ -1,116 +1,129 @@
 import { resolveSnippet, collectVarDecls, buildDefsById } from './snippetEngine.js';
 
+const EVENT_SIGNATURES = {
+  OnSpellStart:    name => `function ${name}:OnSpellStart()`,
+  OnChannelFinish: name => `function ${name}:OnChannelFinish(interrupted)`,
+  OnChannelThink:  name => `function ${name}:OnChannelThink(interval)`,
+  OnProjectileHit: name => `function ${name}:OnProjectileHit(target, location)`,
+  OnUpgrade:       name => `function ${name}:OnUpgrade()`,
+};
+
 export function generateLua(state, snippetsJson) {
-  const name     = state.AbilityName || "my_ability_lua";
-  const actions  = state.Lua?.OnSpellStart?.actions ?? [];
-  const defsById = buildDefsById(snippetsJson);
-
+  const name      = state.AbilityName || "my_ability_lua";
+  const defsById  = buildDefsById(snippetsJson);
+  const behaviors = state.AbilityBehavior ?? [];
+  const ind       = s => `    ${s}`;
+  const blocks    = [`${name} = class({})`, ""];
   const precache  = new Set();
-  const codeLines = [];
-  const varDecls  = collectVarDecls(actions, defsById);
 
-  for (const action of actions) {
-    const def = defsById[action.type];
-    if (!def) { console.warn(`generateLua: unknown snippet type "${action.type}"`); continue; }
-    const { codeLine } = resolveSnippet(def, action.params);
-    codeLines.push(codeLine);
-    if (action.params.soundfile) precache.add(action.params.soundfile);
+  const impliedEvents = new Set(Object.keys(state.Lua ?? {}));
+  if (behaviors.includes("DOTA_ABILITY_BEHAVIOR_CHANNELLED")) impliedEvents.add("OnChannelFinish");
+
+  for (const event of impliedEvents) {
+    (state.Lua?.[event]?.actions ?? []).forEach(a => {
+      if (a.params?.soundfile) precache.add(a.params.soundfile);
+    });
   }
 
-  const ind = str => `    ${str}`;
-
-  const precacheBody = precache.size
-    ? [...precache].map(f => ind(`PrecacheResource("soundfile", "${f}", context)`)).join("\n")
-    : ind("-- no resources to precache");
-
-  const onSpellBody = [
-    ...varDecls.map(ind),
-    ...(varDecls.length && codeLines.length ? [""] : []),
-    ...codeLines.map(ind),
-  ].join("\n") || ind("-- TODO: implement OnSpellStart");
-
-  return [
-    `${name} = class({})`,
-    "",
+  blocks.push(
     `function ${name}:Precache(context)`,
-    precacheBody,
-    "end",
-    "",
-    `function ${name}:OnSpellStart()`,
-    onSpellBody,
-    "end",
-    "",
-  ].join("\n");
+    precache.size
+      ? [...precache].map(f => ind(`PrecacheResource("soundfile", "${f}", context)`)).join("\n")
+      : ind("-- no resources to precache"),
+    "end", ""
+  );
+
+  for (const event of impliedEvents) {
+    const sig = EVENT_SIGNATURES[event];
+    if (!sig) continue;
+    const actions  = state.Lua?.[event]?.actions ?? [];
+    const varDecls = collectVarDecls(actions, defsById);
+    const codeLines = [];
+    for (const action of actions) {
+      const def = defsById[action.type];
+      if (!def) continue;
+      codeLines.push(resolveSnippet(def, action.params).codeLine);
+    }
+    const body = [
+      ...varDecls.map(ind),
+      ...(varDecls.length && codeLines.length ? [""] : []),
+      ...codeLines.map(ind),
+    ].join("\n") || ind(`-- TODO: implement ${event}`);
+    blocks.push(sig(name), body, "end", "");
+  }
+
+  return blocks.join("\n");
 }
 
 export function generateKV(state) {
-  const name     = state.AbilityName || "my_ability_lua";
-  const disabled = state._kvDisabled ?? new Set();
-
-  const behavior = state.AbilityBehavior?.length
-    ? state.AbilityBehavior.join(" | ")
-    : "DOTA_ABILITY_BEHAVIOR_NO_TARGET";
-
-  const targetType = state.AbilityUnitTargetType?.length
-    ? state.AbilityUnitTargetType.join(" | ")
-    : "";
+  const name      = state.AbilityName || "my_ability_lua";
+  const disabled  = state._kvDisabled ?? new Set();
+  const active    = state._activeFields ?? new Set();
+  const behaviors = state.AbilityBehavior ?? [];
+  const behavior  = behaviors.length ? behaviors.join(" | ") : "DOTA_ABILITY_BEHAVIOR_NO_TARGET";
+  const targetType = (state.AbilityUnitTargetType ?? []).join(" | ");
 
   const lines = [
-    `"${name}"`,
-    "{",
+    `"${name}"`, "{",
     kv("BaseClass",       "ability_lua"),
     kv("ScriptFile",      state.ScriptFile  || ""),
-    kv("AbilityType",     state.AbilityType || "DOTA_ABILITY_TYPE_BASIC"),
     kv("AbilityBehavior", behavior),
   ];
 
-  if (targetType && !disabled.has("AbilityUnitTargetType")) {
-    if (!disabled.has("AbilityUnitTargetTeam")) {
+  const opt = (key, val) => {
+    if (disabled.has(key) || !active.has(key) || val == null) return;
+    lines.push(kv(key, String(val)));
+  };
+
+  opt("AbilityType",      state.AbilityType  || "DOTA_ABILITY_TYPE_BASIC");
+  opt("AbilityTextureName", state.AbilityTextureName || "");
+  opt("AbilitySharedCooldown", state.AbilitySharedCooldown);
+  opt("AbilitySound",     state.AbilitySound);
+  opt("LinkedAbility",    state.LinkedAbility);
+  opt("AbilityCastAnimation", state.AbilityCastAnimation);
+  opt("AbilityUnitDamageType", state.AbilityUnitDamageType);
+  opt("SpellImmunityType",     state.SpellImmunityType);
+  opt("SpellDispellableType",  state.SpellDispellableType);
+  opt("FightRecapLevel",  state.FightRecapLevel);
+  opt("HasScepterUpgrade",state.HasScepterUpgrade);
+  opt("IsGrantedByScepter",state.IsGrantedByScepter);
+  opt("IsGrantedByShard",  state.IsGrantedByShard);
+  opt("AbilityDraftDisabled",state.AbilityDraftDisabled);
+
+  if (targetType && active.has("AbilityUnitTargetType") && !disabled.has("AbilityUnitTargetType")) {
+    if (active.has("AbilityUnitTargetTeam") && !disabled.has("AbilityUnitTargetTeam")) {
       lines.push(kv("AbilityUnitTargetTeam", state.AbilityUnitTargetTeam || "DOTA_UNIT_TARGET_TEAM_ENEMY"));
     }
     lines.push(kv("AbilityUnitTargetType", targetType));
+    const flags = (state.AbilityUnitTargetFlags ?? []).join(" | ");
+    if (flags && active.has("AbilityUnitTargetFlags") && !disabled.has("AbilityUnitTargetFlags")) {
+      lines.push(kv("AbilityUnitTargetFlags", flags));
+    }
   }
 
-  if (!disabled.has("AbilityTextureName")) {
-    lines.push(kv("AbilityTextureName", state.AbilityTextureName || ""));
+  opt("MaxLevel",         state.MaxLevel ?? 4);
+  opt("AbilityCastRange", state.AbilityCastRange || "0");
+  opt("AbilityCastPoint", state.AbilityCastPoint || "0.3");
+
+  if (behaviors.includes("DOTA_ABILITY_BEHAVIOR_CHANNELLED") && active.has("AbilityChannelTime") && !disabled.has("AbilityChannelTime")) {
+    lines.push(kv("AbilityChannelTime", state.AbilityChannelTime || "3"));
   }
-  if (!disabled.has("MaxLevel")) {
-    lines.push(kv("MaxLevel", String(state.MaxLevel ?? 4)));
-  }
-  if (!disabled.has("AbilityCastRange")) {
-    lines.push(kv("AbilityCastRange", state.AbilityCastRange || "0"));
-  }
-  if (!disabled.has("AbilityCastPoint")) {
-    lines.push(kv("AbilityCastPoint", state.AbilityCastPoint || "0.3"));
-  }
-  if (!disabled.has("AbilityCooldown")) {
-    lines.push(kv("AbilityCooldown", state.AbilityCooldown || "0"));
-  }
-  if (!disabled.has("AbilityManaCost")) {
-    lines.push(kv("AbilityManaCost", state.AbilityManaCost || "0"));
-  }
-  if (!disabled.has("AbilityDamage") && state.AbilityDamage && state.AbilityDamage !== "0") {
-    lines.push(kv("AbilityDamage", state.AbilityDamage));
-  }
+
+  opt("AbilityCooldown",  state.AbilityCooldown  || "0");
+  opt("AbilityManaCost",  state.AbilityManaCost  || "0");
+  opt("AbilityDamage",    state.AbilityDamage    || "0");
+  opt("AbilityDuration",  state.AbilityDuration  || "0");
 
   const values = state.AbilityValues ?? [];
   if (values.length) {
-    lines.push(
-      '    "AbilityValues"',
-      "    {",
+    lines.push('    "AbilityValues"', "    {",
       ...values.map(s => `        "${s.key}"${kvPad(s.key, 24)}"${s.value}"`),
-      "    }"
-    );
+      "    }");
   }
 
   lines.push("}");
   return lines.join("\n") + "\n";
 }
 
-function kv(key, val) {
-  return `    "${key}"${kvPad(key, 24)}"${val}"`;
-}
-
-function kvPad(key, targetLen) {
-  return " ".repeat(Math.max(1, targetLen - key.length));
-}
+function kv(key, val) { return `    "${key}"${kvPad(key, 24)}"${val}"`; }
+function kvPad(key, n) { return " ".repeat(Math.max(1, n - key.length)); }

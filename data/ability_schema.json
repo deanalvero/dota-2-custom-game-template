@@ -1,28 +1,17 @@
 {
   "AbilityName": {
-    "type": "text",
-    "label": "Ability Name",
-    "default": "my_ability_lua"
+    "type": "text", "label": "Ability Name", "default": "my_ability_lua", "core": true
   },
   "ScriptFile": {
-    "type": "text",
-    "label": "Script File",
-    "default": "abilities/my_ability_lua.lua"
+    "type": "text", "label": "Script File", "default": "abilities/my_ability_lua.lua", "core": true
   },
-  "AbilityType": {
-    "type": "select",
-    "label": "Ability Type",
-    "options": [
-      "DOTA_ABILITY_TYPE_BASIC",
-      "DOTA_ABILITY_TYPE_ULTIMATE",
-      "DOTA_ABILITY_TYPE_ATTRIBUTES",
-      "DOTA_ABILITY_TYPE_HIDDEN"
-    ],
-    "default": "DOTA_ABILITY_TYPE_BASIC"
+  "AbilityTextureName": {
+    "type": "select", "label": "Texture Name", "core": true,
+    "source": "ability_textures.json",
+    "previewUrl": "https://cdn.steamstatic.com/apps/dota2/images/dota_react/abilities/{{value}}.png"
   },
   "AbilityBehavior": {
-    "type": "multiselect",
-    "label": "Ability Behavior",
+    "type": "behavior", "label": "Ability Behavior", "core": true,
     "options": [
       "DOTA_ABILITY_BEHAVIOR_NO_TARGET",
       "DOTA_ABILITY_BEHAVIOR_UNIT_TARGET",
@@ -41,78 +30,92 @@
       "DOTA_ABILITY_BEHAVIOR_ITEM"
     ]
   },
+  "AbilityType": {
+    "type": "select", "label": "Ability Type", "addable": true, "default": "DOTA_ABILITY_TYPE_BASIC",
+    "options": ["DOTA_ABILITY_TYPE_BASIC","DOTA_ABILITY_TYPE_ULTIMATE","DOTA_ABILITY_TYPE_ATTRIBUTES","DOTA_ABILITY_TYPE_HIDDEN"]
+  },
   "AbilityUnitTargetTeam": {
-    "type": "select",
-    "label": "Target Team",
-    "optional": true,
-    "options": [
-      "DOTA_UNIT_TARGET_TEAM_ENEMY",
-      "DOTA_UNIT_TARGET_TEAM_FRIENDLY",
-      "DOTA_UNIT_TARGET_TEAM_BOTH",
-      "DOTA_UNIT_TARGET_TEAM_CUSTOM"
-    ],
-    "default": "DOTA_UNIT_TARGET_TEAM_ENEMY"
+    "type": "select", "label": "Target Team", "addable": true, "default": "DOTA_UNIT_TARGET_TEAM_ENEMY",
+    "options": ["DOTA_UNIT_TARGET_TEAM_ENEMY","DOTA_UNIT_TARGET_TEAM_FRIENDLY","DOTA_UNIT_TARGET_TEAM_BOTH","DOTA_UNIT_TARGET_TEAM_CUSTOM"]
   },
   "AbilityUnitTargetType": {
-    "type": "multiselect",
-    "label": "Target Type",
-    "optional": true,
-    "options": [
-      "DOTA_UNIT_TARGET_HERO",
-      "DOTA_UNIT_TARGET_BASIC",
-      "DOTA_UNIT_TARGET_CREEP",
-      "DOTA_UNIT_TARGET_BUILDING",
-      "DOTA_UNIT_TARGET_COURIER",
-      "DOTA_UNIT_TARGET_ALL"
-    ]
+    "type": "multiselect", "label": "Target Type", "addable": true,
+    "options": ["DOTA_UNIT_TARGET_HERO","DOTA_UNIT_TARGET_BASIC","DOTA_UNIT_TARGET_CREEP","DOTA_UNIT_TARGET_BUILDING","DOTA_UNIT_TARGET_COURIER","DOTA_UNIT_TARGET_ALL"]
   },
-  "AbilityTextureName": {
-    "type": "select",
-    "label": "Texture Name",
-    "optional": true,
-    "source": "ability_textures.json",
-    "previewUrl": "https://cdn.steamstatic.com/apps/dota2/images/dota_react/abilities/{{value}}.png"
+  "AbilityUnitTargetFlags": {
+    "type": "multiselect", "label": "Target Flags", "addable": true,
+    "options": ["DOTA_UNIT_TARGET_FLAG_NONE","DOTA_UNIT_TARGET_FLAG_RANGED_ONLY","DOTA_UNIT_TARGET_FLAG_MELEE_ONLY","DOTA_UNIT_TARGET_FLAG_DEAD","DOTA_UNIT_TARGET_FLAG_MAGIC_IMMUNE_ENEMIES","DOTA_UNIT_TARGET_FLAG_NOT_MAGIC_IMMUNE_ALLIES","DOTA_UNIT_TARGET_FLAG_INVULNERABLE","DOTA_UNIT_TARGET_FLAG_FOW_VISIBLE","DOTA_UNIT_TARGET_FLAG_NO_INVIS","DOTA_UNIT_TARGET_FLAG_PLAYER_CONTROLLED","DOTA_UNIT_TARGET_FLAG_NOT_DOMINATED","DOTA_UNIT_TARGET_FLAG_NOT_SUMMONED","DOTA_UNIT_TARGET_FLAG_NOT_ILLUSIONS"]
+  },
+  "AbilityUnitDamageType": {
+    "type": "select", "label": "Damage Type", "addable": true, "default": "DAMAGE_TYPE_MAGICAL",
+    "options": ["DAMAGE_TYPE_MAGICAL","DAMAGE_TYPE_PHYSICAL","DAMAGE_TYPE_PURE","DAMAGE_TYPE_HP_REMOVAL"]
+  },
+  "SpellImmunityType": {
+    "type": "select", "label": "Spell Immunity Type", "addable": true, "default": "SPELL_IMMUNITY_ENEMIES_NO",
+    "options": ["SPELL_IMMUNITY_ENEMIES_NO","SPELL_IMMUNITY_ENEMIES_YES","SPELL_IMMUNITY_ALLIES_NO","SPELL_IMMUNITY_ALLIES_YES","SPELL_IMMUNITY_ALLIES_YES_ENEMIES_NO","SPELL_IMMUNITY_NONE"]
+  },
+  "SpellDispellableType": {
+    "type": "select", "label": "Dispellable Type", "addable": true, "default": "SPELL_DISPELLABLE_YES",
+    "options": ["SPELL_DISPELLABLE_YES","SPELL_DISPELLABLE_YES_STRONG","SPELL_DISPELLABLE_NO","SPELL_DISPELLABLE_NONE"]
+  },
+  "AbilityCastAnimation": {
+    "type": "select", "label": "Cast Animation", "addable": true, "default": "ACT_DOTA_CAST_ABILITY_1",
+    "options": ["ACT_DOTA_CAST_ABILITY_1","ACT_DOTA_CAST_ABILITY_2","ACT_DOTA_CAST_ABILITY_3","ACT_DOTA_CAST_ABILITY_4","ACT_DOTA_CAST_ABILITY_5","ACT_DOTA_CAST_ABILITY_6","ACT_DOTA_DISABLED"]
+  },
+  "AbilitySharedCooldown": {
+    "type": "text", "label": "Shared Cooldown Group", "addable": true, "default": ""
+  },
+  "AbilitySound": {
+    "type": "text", "label": "Ability Sound Event", "addable": true, "default": ""
+  },
+  "LinkedAbility": {
+    "type": "text", "label": "Linked Ability", "addable": true, "default": ""
   },
   "MaxLevel": {
-    "type": "number",
-    "label": "Max Level",
-    "optional": true,
-    "default": 4,
-    "min": 1,
-    "max": 7
+    "type": "number", "label": "Max Level", "addable": true, "default": 4, "min": 1, "max": 7
   },
   "AbilityCastRange": {
-    "type": "perlevel",
-    "label": "Cast Range",
-    "optional": true,
-    "default": "600"
+    "type": "perlevel", "label": "Cast Range", "addable": true, "default": "600"
   },
   "AbilityCastPoint": {
-    "type": "perlevel",
-    "label": "Cast Point",
-    "optional": true,
-    "default": "0.3"
+    "type": "perlevel", "label": "Cast Point", "addable": true, "default": "0.3"
+  },
+  "AbilityChannelTime": {
+    "type": "perlevel", "label": "Channel Time", "addable": true, "default": "3"
   },
   "AbilityCooldown": {
-    "type": "perlevel",
-    "label": "Cooldown",
-    "optional": true,
-    "default": "16 14 12 10"
+    "type": "perlevel", "label": "Cooldown", "addable": true, "default": "16 14 12 10"
   },
   "AbilityManaCost": {
-    "type": "perlevel",
-    "label": "Mana Cost",
-    "optional": true,
-    "default": "80 100 120 140"
+    "type": "perlevel", "label": "Mana Cost", "addable": true, "default": "80 100 120 140"
   },
   "AbilityDamage": {
-    "type": "perlevel",
-    "label": "Ability Damage",
-    "optional": true,
-    "default": "0"
+    "type": "perlevel", "label": "Ability Damage", "addable": true, "default": "0"
+  },
+  "AbilityDuration": {
+    "type": "perlevel", "label": "Duration", "addable": true, "default": "5"
+  },
+  "FightRecapLevel": {
+    "type": "select", "label": "Fight Recap Level", "addable": true, "default": "0",
+    "options": ["0","1","2"]
+  },
+  "HasScepterUpgrade": {
+    "type": "select", "label": "Has Scepter Upgrade", "addable": true, "default": "0",
+    "options": ["0","1"]
+  },
+  "IsGrantedByScepter": {
+    "type": "select", "label": "Granted by Scepter", "addable": true, "default": "0",
+    "options": ["0","1"]
+  },
+  "IsGrantedByShard": {
+    "type": "select", "label": "Granted by Shard", "addable": true, "default": "0",
+    "options": ["0","1"]
+  },
+  "AbilityDraftDisabled": {
+    "type": "select", "label": "Draft Disabled", "addable": true, "default": "0",
+    "options": ["0","1"]
   },
   "AbilityValues": {
-    "type": "values",
-    "label": "Ability Values"
+    "type": "values", "label": "Ability Values", "core": true
   }
 }

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dota 2 Ability Builder</title>
+  <title>Dota 2 Custom Game Template</title>
   <script>
     const t = localStorage.getItem("theme") ?? (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
     document.documentElement.setAttribute("data-theme", t);
@@ -15,8 +15,12 @@
 <div class="topbar">
   <div class="tabs">
     <button class="tab active" data-tab="ability">Ability</button>
+    <button class="tab" data-tab="modifier">Modifier</button>
   </div>
-  <button id="themeToggle" class="theme-toggle"></button>
+  <div class="topbar-actions">
+    <button id="shareBtn" class="share-btn">⎘ Share</button>
+    <button id="themeToggle" class="theme-toggle"></button>
+  </div>
 </div>
 
 <div id="ability" class="tab-content active">
@@ -30,6 +34,7 @@
     <div class="layout-right">
       <div class="preview-panel">
         <h3>Preview</h3>
+        <div id="validationPanel"></div>
         <h4 class="preview-label">Lua</h4>
         <pre id="luaPreview"></pre>
         <h4 class="preview-label">KeyValues</h4>
@@ -38,6 +43,66 @@
           <button id="downloadLua">⬇ Download Lua</button>
           <button id="downloadKV">⬇ Download KV</button>
         </div>
+        <details class="file-info">
+          <summary>📁 Where do these files go?</summary>
+          <div class="file-info-body">
+            <div class="file-info-row">
+              <span class="file-info-icon">📄</span>
+              <div>
+                <div class="file-info-name">ability.lua</div>
+                <code class="file-path">game/dota_addons/<strong>&lt;addon&gt;</strong>/scripts/vscripts/<strong>abilities/ability.lua</strong></code>
+                <div class="file-info-note">Class name must match Ability Name. Path must match Script File field.</div>
+              </div>
+            </div>
+            <div class="file-info-row">
+              <span class="file-info-icon">📄</span>
+              <div>
+                <div class="file-info-name">npc_abilities_custom.txt</div>
+                <code class="file-path">game/dota_addons/<strong>&lt;addon&gt;</strong>/scripts/npc/<strong>npc_abilities_custom.txt</strong></code>
+                <div class="file-info-note">Wrap the block inside a <code>"DOTAAbilities" { ... }</code> root key.</div>
+              </div>
+            </div>
+            <div class="file-info-row">
+              <span class="file-info-icon">💡</span>
+              <div class="file-info-note">Ability name display and tooltips go in:<br>
+              <code class="file-path">resource/<strong>addon_english.txt</strong></code></div>
+            </div>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modifier" class="tab-content">
+  <div class="layout">
+    <div class="layout-left">
+      <h2>Modifier Builder</h2>
+      <div id="modifierForm"></div>
+      <h3>Lua Events</h3>
+      <div id="modSnippets"></div>
+    </div>
+    <div class="layout-right">
+      <div class="preview-panel">
+        <h3>Preview</h3>
+        <h4 class="preview-label">Lua</h4>
+        <pre id="modifierPreview"></pre>
+        <div class="download-buttons">
+          <button id="downloadModifierLua">⬇ Download Lua</button>
+        </div>
+        <details class="file-info">
+          <summary>📁 Where does this file go?</summary>
+          <div class="file-info-body">
+            <div class="file-info-row">
+              <span class="file-info-icon">📄</span>
+              <div>
+                <div class="file-info-name">modifier_my_ability.lua</div>
+                <code class="file-path">game/dota_addons/<strong>&lt;addon&gt;</strong>/scripts/vscripts/<strong>modifiers/modifier_my_ability.lua</strong></code>
+                <div class="file-info-note">Must be required from your ability's Lua file or from a shared init script.</div>
+              </div>
+            </div>
+          </div>
+        </details>
       </div>
     </div>
   </div>
@@ -46,7 +111,7 @@
 <dialog id="snippetDialog">
   <div class="dialog-inner">
     <div class="dialog-header">
-      <span class="dialog-title">Add Snippet — <span id="dialogEventLabel"></span></span>
+      <span class="dialog-title">Snippet — <span id="dialogEventLabel"></span></span>
       <button class="dialog-close" id="dialogClose" type="button">✕</button>
     </div>
     <div class="dialog-body">
@@ -61,6 +126,49 @@
     <div class="dialog-footer">
       <button class="btn-confirm" id="dialogAdd" type="button" disabled>Add</button>
       <button class="btn-cancel" id="dialogCancel" type="button">Cancel</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="behaviorDialog">
+  <div class="dialog-inner">
+    <div class="dialog-header">
+      <span class="dialog-title">Select Ability Behaviors</span>
+      <button class="dialog-close" onclick="this.closest('dialog').close()" type="button">✕</button>
+    </div>
+    <div class="dialog-body" style="display:block; padding:14px;">
+      <input type="search" class="behavior-search field-input" placeholder="Search behaviors…" style="margin-bottom:10px;">
+      <div class="behavior-option-list"></div>
+    </div>
+    <div class="dialog-footer">
+      <button class="btn-confirm behavior-confirm" type="button">Done</button>
+      <button class="btn-cancel" onclick="this.closest('dialog').close()" type="button">Cancel</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="addKVDialog">
+  <div class="dialog-inner">
+    <div class="dialog-header">
+      <span class="dialog-title">Add KV Parameter</span>
+      <button class="dialog-close" onclick="this.closest('dialog').close()" type="button">✕</button>
+    </div>
+    <div class="dialog-body" style="display:block; padding:14px;">
+      <input type="search" class="addkv-search field-input" placeholder="Search parameters…" style="margin-bottom:10px;">
+      <div class="addkv-list"></div>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="propDialog">
+  <div class="dialog-inner">
+    <div class="dialog-header">
+      <span class="dialog-title">Add Modifier Property</span>
+      <button class="dialog-close" onclick="this.closest('dialog').close()" type="button">✕</button>
+    </div>
+    <div class="dialog-body" style="display:block; padding:14px;">
+      <input type="search" class="prop-search field-input" placeholder="Search properties…" style="margin-bottom:10px;">
+      <div class="prop-dialog-list"></div>
     </div>
   </div>
 </dialog>

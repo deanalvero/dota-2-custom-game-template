@@ -3,25 +3,39 @@
     {
       "id": "play_sound_on_caster",
       "label": "Play Sound on Caster",
-      "requires": ["caster"],
+      "requires": [
+        "caster"
+      ],
       "params": {
-        "sound": { "type": "search_select", "source": "sounds.json" }
+        "sound": {
+          "type": "search_select",
+          "source": "sounds.json"
+        }
       },
       "template": "EmitSoundOn(\"{{sound}}\", caster)"
     },
     {
       "id": "play_sound_on_target",
       "label": "Play Sound on Target",
-      "requires": ["target"],
+      "requires": [
+        "target"
+      ],
       "params": {
-        "sound": { "type": "search_select", "source": "sounds.json" }
+        "sound": {
+          "type": "search_select",
+          "source": "sounds.json"
+        }
       },
       "template": "EmitSoundOn(\"{{sound}}\", target)"
     },
     {
       "id": "deal_damage_to_target",
       "label": "Deal Damage to Target",
-      "requires": ["caster", "target", "ability"],
+      "requires": [
+        "caster",
+        "target",
+        "ability"
+      ],
       "params": {
         "damage_type": {
           "type": "select",
@@ -30,9 +44,236 @@
             "DAMAGE_TYPE_PHYSICAL",
             "DAMAGE_TYPE_PURE"
           ]
+        },
+        "special_value": {
+          "type": "text",
+          "placeholder": "e.g. damage"
         }
       },
-      "template": "ApplyDamage({ victim = target, attacker = caster, damage = ability:GetSpecialValueFor(\"damage\"), damage_type = {{damage_type}} })"
+      "template": "ApplyDamage({ victim = target, attacker = caster, damage = ability:GetSpecialValueFor(\"{{special_value}}\"), damage_type = {{damage_type}} })"
+    },
+    {
+      "id": "stun_target",
+      "label": "Stun Target",
+      "requires": [
+        "caster",
+        "target",
+        "ability"
+      ],
+      "params": {
+        "duration": {
+          "type": "text",
+          "placeholder": "e.g. ability:GetSpecialValueFor(\"stun_duration\")"
+        }
+      },
+      "template": "target:AddNewModifier(caster, ability, \"modifier_stunned\", { duration = {{duration}} })"
+    },
+    {
+      "id": "knockback_target",
+      "label": "Knockback Target",
+      "requires": [
+        "caster",
+        "target",
+        "ability"
+      ],
+      "params": {
+        "distance": {
+          "type": "text",
+          "placeholder": "e.g. ability:GetSpecialValueFor(\"knockback_distance\")"
+        },
+        "duration": {
+          "type": "text",
+          "placeholder": "e.g. 0.3"
+        },
+        "height": {
+          "type": "text",
+          "placeholder": "e.g. 50"
+        }
+      },
+      "template": "target:AddNewModifier(caster, ability, \"modifier_knockback\", { duration = {{duration}}, knockback_duration = {{duration}}, knockback_distance = {{distance}}, knockback_height = {{height}}, center_x = caster:GetOrigin().x, center_y = caster:GetOrigin().y, center_z = caster:GetOrigin().z })"
+    },
+    {
+      "id": "kill_trees_in_radius",
+      "label": "Kill Trees in Radius",
+      "requires": [
+        "point",
+        "ability"
+      ],
+      "params": {
+        "special_value": {
+          "type": "text",
+          "placeholder": "e.g. radius"
+        }
+      },
+      "template": "GridNav:DestroyTreesAroundPoint(point, ability:GetSpecialValueFor(\"{{special_value}}\"), true)"
+    },
+    {
+      "id": "apply_modifier_to_target",
+      "label": "Apply Modifier to Target",
+      "requires": [
+        "caster",
+        "target",
+        "ability"
+      ],
+      "params": {
+        "modifier_name": {
+          "type": "text",
+          "placeholder": "e.g. modifier_my_debuff"
+        },
+        "duration": {
+          "type": "text",
+          "placeholder": "e.g. ability:GetSpecialValueFor(\"duration\")"
+        }
+      },
+      "template": "target:AddNewModifier(caster, ability, \"{{modifier_name}}\", { duration = {{duration}} })"
+    },
+    {
+      "id": "apply_modifier_to_caster",
+      "label": "Apply Modifier to Caster",
+      "requires": [
+        "caster",
+        "ability"
+      ],
+      "params": {
+        "modifier_name": {
+          "type": "text",
+          "placeholder": "e.g. modifier_my_buff"
+        },
+        "duration": {
+          "type": "text",
+          "placeholder": "e.g. ability:GetSpecialValueFor(\"duration\")"
+        }
+      },
+      "template": "caster:AddNewModifier(caster, ability, \"{{modifier_name}}\", { duration = {{duration}} })"
+    },
+    {
+      "id": "create_thinker_at_point",
+      "label": "Create Thinker at Cast Point",
+      "requires": [
+        "caster",
+        "ability",
+        "point"
+      ],
+      "params": {
+        "modifier_name": {
+          "type": "text",
+          "placeholder": "e.g. modifier_my_thinker"
+        },
+        "duration": {
+          "type": "text",
+          "placeholder": "e.g. ability:GetSpecialValueFor(\"duration\")"
+        }
+      },
+      "template": "CreateModifierThinker(caster, ability, \"{{modifier_name}}\", { duration = {{duration}} }, point, caster:GetTeamNumber(), false)"
+    },
+    {
+      "id": "fire_tracking_projectile",
+      "label": "Fire Tracking Projectile at Target",
+      "requires": [
+        "caster",
+        "target",
+        "ability"
+      ],
+      "params": {
+        "particle": {
+          "type": "search_select",
+          "source": "particles.json"
+        },
+        "speed": {
+          "type": "text",
+          "placeholder": "e.g. 1200"
+        }
+      },
+      "template": "ProjectileManager:CreateTrackingProjectile({ Target = target, Source = caster, Ability = ability, EffectName = \"{{particle}}\", bDodgeable = true, iMoveSpeed = {{speed}}, flExpireTime = GameRules:GetGameTime() + 10 })"
+    },
+    {
+      "id": "heal_caster",
+      "label": "Heal Caster",
+      "requires": [
+        "caster",
+        "ability"
+      ],
+      "params": {
+        "special_value": {
+          "type": "text",
+          "placeholder": "e.g. heal_amount"
+        }
+      },
+      "template": "caster:Heal(ability:GetSpecialValueFor(\"{{special_value}}\"), caster)"
+    }
+  ],
+  "OnChannelFinish": [
+    {
+      "id": "channel_finish_play_sound",
+      "label": "Play Sound on Caster",
+      "requires": [
+        "caster"
+      ],
+      "params": {
+        "sound": {
+          "type": "search_select",
+          "source": "sounds.json"
+        }
+      },
+      "template": "EmitSoundOn(\"{{sound}}\", caster)"
+    },
+    {
+      "id": "channel_finish_deal_damage",
+      "label": "Deal Damage to Target (if not interrupted)",
+      "requires": [
+        "caster",
+        "target",
+        "ability"
+      ],
+      "params": {
+        "damage_type": {
+          "type": "select",
+          "options": [
+            "DAMAGE_TYPE_MAGICAL",
+            "DAMAGE_TYPE_PHYSICAL",
+            "DAMAGE_TYPE_PURE"
+          ]
+        },
+        "special_value": {
+          "type": "text",
+          "placeholder": "e.g. damage"
+        }
+      },
+      "template": "if not interrupted then\n        ApplyDamage({ victim = target, attacker = caster, damage = ability:GetSpecialValueFor(\"{{special_value}}\"), damage_type = {{damage_type}} })\n    end"
+    },
+    {
+      "id": "channel_finish_remove_modifier",
+      "label": "Remove Modifier from Caster",
+      "requires": [
+        "caster"
+      ],
+      "params": {
+        "modifier_name": {
+          "type": "text",
+          "placeholder": "e.g. modifier_my_channel_buff"
+        }
+      },
+      "template": "caster:RemoveModifierByName(\"{{modifier_name}}\")"
+    },
+    {
+      "id": "channel_finish_apply_modifier_to_target",
+      "label": "Apply Modifier to Target (if not interrupted)",
+      "requires": [
+        "caster",
+        "target",
+        "ability"
+      ],
+      "params": {
+        "modifier_name": {
+          "type": "text",
+          "placeholder": "e.g. modifier_my_debuff"
+        },
+        "duration": {
+          "type": "text",
+          "placeholder": "e.g. ability:GetSpecialValueFor(\"duration\")"
+        }
+      },
+      "template": "if not interrupted then\n        target:AddNewModifier(caster, ability, \"{{modifier_name}}\", { duration = {{duration}} })\n    end"
     }
   ]
 }

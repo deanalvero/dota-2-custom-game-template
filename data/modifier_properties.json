@@ -1,0 +1,23 @@
+[
+  { "constant": "MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE",      "luaFn": "GetModifierMoveSpeedBonus_Percentage",      "label": "Move Speed % Bonus",        "group": "Movement" },
+  { "constant": "MODIFIER_PROPERTY_MOVESPEED_BONUS_CONSTANT",        "luaFn": "GetModifierMoveSpeedBonus_Constant",        "label": "Move Speed Flat Bonus",     "group": "Movement" },
+  { "constant": "MODIFIER_PROPERTY_MOVESPEED_ABSOLUTE",              "luaFn": "GetModifierMoveSpeedOverride",              "label": "Move Speed Override",       "group": "Movement" },
+  { "constant": "MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT",      "luaFn": "GetModifierAttackSpeedBonus_Constant",      "label": "Attack Speed Bonus",        "group": "Attack" },
+  { "constant": "MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE",          "luaFn": "GetModifierPreAttack_BonusDamage",          "label": "Bonus Attack Damage",       "group": "Attack" },
+  { "constant": "MODIFIER_PROPERTY_BASEATTACK_BONUSDAMAGE",          "luaFn": "GetModifierBaseAttack_BonusDamage",         "label": "Base Attack Bonus Damage",  "group": "Attack" },
+  { "constant": "MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS",            "luaFn": "GetModifierPhysicalArmorBonus",             "label": "Physical Armor Bonus",      "group": "Defense" },
+  { "constant": "MODIFIER_PROPERTY_MAGICAL_RESISTANCE_BONUS",        "luaFn": "GetModifierMagicalResistanceBonus",         "label": "Magic Resistance % Bonus",  "group": "Defense" },
+  { "constant": "MODIFIER_PROPERTY_EVASION_CONSTANT",                "luaFn": "GetModifierEvasion_Constant",               "label": "Evasion % Bonus",           "group": "Defense" },
+  { "constant": "MODIFIER_PROPERTY_HEALTH_REGEN_CONSTANT",           "luaFn": "GetModifierHealthRegenConstant",            "label": "HP Regen Bonus",            "group": "Sustain" },
+  { "constant": "MODIFIER_PROPERTY_HEALTH_BONUS",                    "luaFn": "GetModifierHealthBonus",                    "label": "Max HP Bonus",              "group": "Sustain" },
+  { "constant": "MODIFIER_PROPERTY_MANA_REGEN_CONSTANT",             "luaFn": "GetModifierManaRegenConstant",              "label": "Mana Regen Bonus",          "group": "Sustain" },
+  { "constant": "MODIFIER_PROPERTY_MANA_BONUS",                      "luaFn": "GetModifierManaBonus",                      "label": "Max Mana Bonus",            "group": "Sustain" },
+  { "constant": "MODIFIER_PROPERTY_LIFESTEAL_AMPLIFY_PERCENTAGE",    "luaFn": "GetModifierLifestealRegenAmplify_Percentage","label": "Lifesteal % Amplify",      "group": "Sustain" },
+  { "constant": "MODIFIER_PROPERTY_SPELL_AMPLIFY_PERCENTAGE",        "luaFn": "GetModifierSpellAmplify_Percentage",        "label": "Spell Amplify %",           "group": "Spells" },
+  { "constant": "MODIFIER_PROPERTY_CAST_RANGE_BONUS_TARGET",         "luaFn": "GetModifierCastRangeBonus",                 "label": "Cast Range Bonus",          "group": "Spells" },
+  { "constant": "MODIFIER_PROPERTY_COOLDOWN_PERCENTAGE",             "luaFn": "GetModifierPercentageCooldown",             "label": "Cooldown Reduction %",      "group": "Spells" },
+  { "constant": "MODIFIER_PROPERTY_MANACOST_PERCENTAGE",             "luaFn": "GetModifierPercentageManacost",             "label": "Mana Cost Reduction %",     "group": "Spells" },
+  { "constant": "MODIFIER_PROPERTY_INVISIBILITY_LEVEL",              "luaFn": "GetModifierInvisibilityLevel",              "label": "Invisibility",              "group": "Utility" },
+  { "constant": "MODIFIER_PROPERTY_PROVIDES_VISION",                 "luaFn": "GetModifierProvidesFOWVision",              "label": "Provides Vision",           "group": "Utility" },
+  { "constant": "MODIFIER_PROPERTY_IGNORE_MOVESPEED_LIMIT",          "luaFn": "GetModifierIgnoreMovespeedLimit",           "label": "Ignore Move Speed Limit",   "group": "Utility" }
+]
