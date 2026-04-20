@@ -99,11 +99,11 @@ h4 { color: var(--text-muted); margin: 12px 0 6px; font-size: 11px; text-transfo
 
 .layout {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 32px;
   align-items: start;
 }
-.layout-left { min-width: 0; }
+.layout-left { min-width: 0; overflow: hidden; }
 .layout-right .preview-panel { position: sticky; top: 16px; }
 .preview-label { margin-top: 14px; margin-bottom: 4px; color: var(--text-dim); }
 
@@ -485,6 +485,19 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(2px); }
 .share-btn:hover  { background: var(--blue); color: #fff; }
 .share-btn:disabled { opacity: 0.6; cursor: default; }
 
+.reset-btn {
+  padding: 6px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--text-muted);
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 0.15s, color 0.15s;
+}
+.reset-btn:hover { border-color: var(--tag-border-danger); color: var(--tag-text-danger); }
+
 #validationPanel { margin-bottom: 8px; }
 .validation-item {
   display: flex;
@@ -606,6 +619,8 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(2px); }
   flex-wrap: wrap;
   align-items: center;
   gap: 5px;
+  min-width: 0;
+  max-width: 100%;
 }
 .behavior-tag {
   display: inline-flex;

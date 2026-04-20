@@ -47,6 +47,7 @@ initTabs();
 await initAbilityTab();
 initModifierTab();
 abilityUpdate();
+modifierUpdate();
 
 function initTheme() {
   const saved = localStorage.getItem("theme") ?? (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
@@ -111,6 +112,13 @@ async function initAbilityTab() {
     const url = buildShareUrl();
     try { await navigator.clipboard.writeText(url); showFeedback("shareBtn", "Link copied!"); }
     catch { prompt("Copy this link:", url); }
+  });
+
+  document.getElementById("resetBtn").addEventListener("click", () => {
+    if (!confirm("Reset all data? This clears your saved ability and modifier and cannot be undone.")) return;
+    try { localStorage.removeItem(STORAGE_KEY); } catch {}
+    const clean = `${location.pathname}?tab=${new URLSearchParams(location.search).get("tab") ?? "ability"}`;
+    location.replace(clean);
   });
   document.getElementById("downloadLua").addEventListener("click", () => {
     const errs = validate(state).filter(i => i.level === "error");
@@ -218,8 +226,16 @@ function initModifierTab() {
 
 function modifierUpdate() {
   const mod = state.modifier;
-  document.getElementById("modifierPreview").textContent = generateModifierLua(mod, modSnippetsJson);
+  document.getElementById("modifierPreview").textContent  = generateModifierLua(mod, modSnippetsJson);
+  document.getElementById("addonInitPreview").textContent = generateAddonInit(mod);
   saveState();
+}
+
+function generateAddonInit(mod) {
+  const name   = mod.ModifierName  || "modifier_my_ability";
+  const script = mod.ScriptFile    || `modifiers/${name}`;
+  const path   = script.replace(/\.lua$/, "");
+  return `LinkLuaModifier("${name}", "${path}", LUA_MODIFIER_MOTION_NONE)`;
 }
 
 function makeTextField(container, labelText, obj, key, onChange, searchItems = null) {
@@ -726,15 +742,13 @@ function loadState() {
 }
 function buildShareUrl() {
   const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(serializeState(state)))));
-  const params = new URLSearchParams(location.search);
-  params.set("state", encoded);
-  return `${location.origin}${location.pathname}?${params}`;
+  const tab = new URLSearchParams(location.search).get("tab") ?? "ability";
+  return `${location.origin}${location.pathname}?tab=${tab}&state=${encoded}`;
 }
 function syncUrlHash() {
   const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(serializeState(state)))));
-  const params = new URLSearchParams(location.search);
-  params.set("state", encoded);
-  history.replaceState(null, "", `${location.pathname}?${params}`);
+  const tab = new URLSearchParams(location.search).get("tab") ?? "ability";
+  history.replaceState(null, "", `${location.pathname}?tab=${tab}&state=${encoded}`);
 }
 function download(filename, content) {
   const a = document.createElement("a");
